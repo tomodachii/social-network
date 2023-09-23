@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@backend/common": ["libs/common/src/index.ts"]
+      "@lib/common/*": ["libs/common/src/*/index.ts"],
+      "@lib/ddd": ["libs/ddd/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
