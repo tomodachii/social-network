@@ -1,7 +1,7 @@
 {
-  "name": "post",
+  "name": "notification-service",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/post/src",
+  "sourceRoot": "apps/notification-service/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,12 +11,12 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/post",
-        "main": "apps/post/src/main.ts",
-        "tsConfig": "apps/post/tsconfig.app.json",
-        "assets": ["apps/post/src/assets"],
+        "outputPath": "dist/apps/notification-service",
+        "main": "apps/notification-service/src/main.ts",
+        "tsConfig": "apps/notification-service/tsconfig.app.json",
+        "assets": ["apps/notification-service/src/assets"],
         "isolatedConfig": true,
-        "webpackConfig": "apps/post/webpack.config.js"
+        "webpackConfig": "apps/notification-service/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -27,14 +27,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "post:build"
+        "buildTarget": "notification-service:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "post:build:development"
+          "buildTarget": "notification-service:build:development"
         },
         "production": {
-          "buildTarget": "post:build:production"
+          "buildTarget": "notification-service:build:production"
         }
       }
     },
@@ -42,14 +42,14 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/post/**/*.ts"]
+        "lintFilePatterns": ["apps/notification-service/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/post/jest.config.ts",
+        "jestConfig": "apps/notification-service/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

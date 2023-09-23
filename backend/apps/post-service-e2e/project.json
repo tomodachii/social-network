@@ -1,14 +1,14 @@
 {
-  "name": "notification-e2e",
+  "name": "post-service-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": ["notification"],
+  "implicitDependencies": ["post-service"],
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/notification-e2e/jest.config.ts",
+        "jestConfig": "apps/post-service-e2e/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -16,7 +16,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/notification-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/post-service-e2e/**/*.{js,ts}"]
       }
     }
   }
