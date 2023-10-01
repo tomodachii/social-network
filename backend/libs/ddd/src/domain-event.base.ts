@@ -17,7 +17,7 @@ type DomainEventMetadata = {
   readonly causationId?: string;
 
   /**
-   * User ID for debugging and logging purposes
+   * UserEntity ID for debugging and logging purposes
    */
   readonly userId?: string;
 };

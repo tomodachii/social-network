@@ -1,25 +1,4 @@
-export class Paginated<T> {
-  readonly count: number;
-  readonly limit: number;
-  readonly page: number;
-  readonly data: readonly T[];
-
-  constructor(props: Paginated<T>) {
-    this.count = props.count;
-    this.limit = props.limit;
-    this.page = props.page;
-    this.data = props.data;
-  }
-}
-
-export type OrderBy = { field: string | true; param: 'asc' | 'desc' };
-
-export type PaginatedQueryParams = {
-  limit: number;
-  page: number;
-  offset: number;
-  orderBy: OrderBy;
-};
+import { OrderBy, PaginatedQueryParams } from './repository.port';
 
 /**
  * Base class for regular queries
@@ -50,3 +29,4 @@ export type PaginatedParams<T> = Omit<
   'limit' | 'offset' | 'orderBy' | 'page'
 > &
   Partial<Omit<PaginatedQueryParams, 'offset'>>;
+  
