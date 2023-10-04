@@ -33,6 +33,7 @@ import {
   DeleteUserCommand,
   FindUsersQuery,
 } from '../application';
+import { User } from '@prisma/client/sample';
 
 @Controller('user')
 export class UserHttpController {
@@ -90,10 +91,9 @@ export class UserHttpController {
       limit: queryParams?.limit,
       page: queryParams?.page,
     });
-    const result: Result<
-      Paginated<UserRecord>,
-      Error
-    > = await this.queryBus.execute(query);
+    const result: Result<Paginated<User>, Error> = await this.queryBus.execute(
+      query
+    );
 
     const paginated = result.unwrap();
 

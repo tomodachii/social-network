@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@lib/common/*": ["libs/common/src/*/index.ts"],
-      "@lib/ddd": ["libs/ddd/src/index.ts"]
+      "@lib/ddd": ["libs/ddd/src/index.ts"],
+      "@lib/sample-db": ["libs/sample-db/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

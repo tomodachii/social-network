@@ -3,7 +3,8 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Ok, Result } from 'oxide.ts';
 import { Paginated } from '@lib/ddd';
 import { UserRecord } from '../../infrastructure';
-import { EntityManager } from '@mikro-orm/mysql';
+import { PrismaSampleService, User } from '@lib/sample-db';
+import { Prisma } from '@prisma/client/sample';
 
 export class FindUsersQuery extends PaginatedQueryBase {
   readonly country?: string;
@@ -22,7 +23,7 @@ export class FindUsersQuery extends PaginatedQueryBase {
 
 @QueryHandler(FindUsersQuery)
 export class FindUsersQueryHandler implements IQueryHandler {
-  constructor(protected readonly em: EntityManager) {}
+  constructor(private readonly prisma: PrismaSampleService) {}
 
   /**
    * In read model we don't need to execute
@@ -32,18 +33,22 @@ export class FindUsersQueryHandler implements IQueryHandler {
    */
   async execute(
     query: FindUsersQuery
-  ): Promise<Result<Paginated<UserRecord>, Error>> {
-    const [data, count] = await this.em
-      .createQueryBuilder(UserRecord, 'u')
-      .select('*')
-      .where({
-        postalCode: query.postalCode,
-        country: query.country,
-        street: query.street,
-      })
-      .limit(query.limit)
-      .offset(query.offset)
-      .getResultAndCount();
+  ): Promise<Result<Paginated<User>, Error>> {
+    const filterQuery: Prisma.UserWhereInput = {
+      country: query.country,
+      postalCode: query.postalCode,
+      street: query.street,
+    };
+    const [data, count] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        skip: query.offset * query.limit,
+        take: query.limit,
+        where: filterQuery,
+      }),
+      this.prisma.user.count({
+        where: filterQuery,
+      }),
+    ]);
 
     return Ok(
       new Paginated({

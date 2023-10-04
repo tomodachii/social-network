@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client/sample"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/test_db"
+}
+
+// Error validating field `user` in model `Wallet`: The relation field `user` on model `Wallet` is missing an opposite relation field on the model `User`. Either run `prisma format` or add it manually.
+
+
+enum UserRoles {
+  admin
+  moderator
+  guest
+}
+  
+
+model User {
+  id    String        @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  email String        
+  country String
+  postalCode String
+  street String
+  role  UserRoles
+
+  @@map("user")
+}
+
+model Wallet {
+  id    String        @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  balance Float
+  userId String       @unique
+
+  @@map("wallet")
+}

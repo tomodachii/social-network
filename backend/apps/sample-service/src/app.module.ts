@@ -26,16 +26,16 @@ const interceptors = [
 @Module({
   imports: [
     RequestContextModule,
-    MikroOrmModule.forRoot({
-      entities: [UserRecord, WalletRecord],
-      dbName: 'test_db',
-      host: 'localhost',
-      user: 'root',
-      password: '123456',
-      type: 'mysql',
-      port: 3306,
-      debug: true,
-    }),
+    // MikroOrmModule.forRoot({
+    //   entities: [UserRecord, WalletRecord],
+    //   dbName: 'test_db',
+    //   host: 'localhost',
+    //   user: 'root',
+    //   password: '123456',
+    //   type: 'mysql',
+    //   port: 3306,
+    //   debug: true,
+    // }),
     CqrsModule,
 
     // Modules
