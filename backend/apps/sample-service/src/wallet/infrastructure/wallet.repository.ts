@@ -1,11 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
-import { BaseRepository } from '@lib/common/databases';
 import { WalletEntity, WalletRepositoryPort } from '../domain';
-import { WalletRecord } from './wallet.record';
 import { WalletMapper } from '../wallet.mapper';
+import { PrismaSampleService, Wallet } from '@lib/sample-db';
+import { BaseRepository } from '@lib/common/databases';
 
 /**
  *  Repository is used for retrieving/saving domain entities
@@ -13,28 +11,28 @@ import { WalletMapper } from '../wallet.mapper';
 @Injectable()
 // implements WalletRepositoryPort
 export class WalletRepository
-  extends BaseRepository<WalletEntity, WalletRecord>
+  extends BaseRepository<WalletEntity, Wallet>
   implements WalletRepositoryPort
 {
   constructor(
-    protected readonly orm: MikroORM,
+    protected readonly prisma: PrismaSampleService,
     protected readonly mapper: WalletMapper,
     protected readonly eventBus: EventBus,
-    protected readonly em: EntityManager
+    protected readonly logger: Logger
   ) {
-    super(orm, mapper, eventBus, new Logger('WalletRepository'));
+    super(prisma, mapper, eventBus, logger);
   }
 
-  insert(entity: WalletEntity): Promise<void> {
-    return this.em
-      .createQueryBuilder(WalletRecord)
-      .insert({
+  async insert(entity: WalletEntity): Promise<void> {
+    await this.prisma.wallet.create({
+      data: {
         id: entity.id,
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
         balance: entity.getPropsCopy().balance,
         userId: entity.getPropsCopy().userId,
-      })
-      .execute();
+      },
+    });
+    return new Promise((resolve) => resolve());
   }
 }

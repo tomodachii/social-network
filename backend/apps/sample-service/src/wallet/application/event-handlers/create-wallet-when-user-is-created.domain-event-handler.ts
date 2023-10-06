@@ -1,9 +1,8 @@
-import { WalletEntity } from '../../domain/wallet.entity';
 import { Inject } from '@nestjs/common';
 import { WALLET_REPOSITORY } from '../../wallet.di-tokens';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { UserCreatedDomainEvent } from 'apps/sample-service/src/user/domain';
-import { WalletRepositoryPort } from '../../domain/wallet.repository.port';
+import { WalletRepositoryPort, WalletEntity } from '../../domain';
 
 @EventsHandler(UserCreatedDomainEvent)
 export class CreateWalletWhenUserIsCreatedDomainEventHandler

@@ -1,20 +1,19 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CreateWalletWhenUserIsCreatedDomainEventHandler } from './application';
-import { WalletRepository } from './infrastructure';
 import { WALLET_REPOSITORY } from './wallet.di-tokens';
-import { WalletMapper, WalletPrismaMapper } from './wallet.mapper';
+import { WalletMapper } from './wallet.mapper';
 import { CqrsModule } from '@nestjs/cqrs';
-import { WalletPrismaRepository } from './infrastructure/wallet.prisma.repo';
+import { WalletRepository } from './infrastructure';
 import { PrismaSampleService } from '@lib/sample-db';
 
 const eventHandlers: Provider[] = [
   CreateWalletWhenUserIsCreatedDomainEventHandler,
 ];
 
-const mappers: Provider[] = [WalletPrismaMapper];
+const mappers: Provider[] = [WalletMapper];
 
 const repositories: Provider[] = [
-  { provide: WALLET_REPOSITORY, useClass: WalletPrismaRepository },
+  { provide: WALLET_REPOSITORY, useClass: WalletRepository },
 ];
 
 @Module({

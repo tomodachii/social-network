@@ -23,15 +23,12 @@ import {
 import { UserAlreadyExistsError } from '../domain';
 import { NotFoundException } from '@lib/common/exceptions';
 import {
-  CreateUserRequestDto,
-  UserPaginatedResponseDto,
-  FindUsersRequestDto,
-} from '../application/dtos';
-import { UserRecord } from '../infrastructure';
-import {
   CreateUserCommand,
   DeleteUserCommand,
   FindUsersQuery,
+  CreateUserRequestDto,
+  UserPaginatedResponseDto,
+  FindUsersRequestDto,
 } from '../application';
 import { User } from '@prisma/client/sample';
 

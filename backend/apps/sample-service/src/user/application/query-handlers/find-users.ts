@@ -2,7 +2,6 @@ import { PaginatedParams, PaginatedQueryBase } from '@lib/ddd';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Ok, Result } from 'oxide.ts';
 import { Paginated } from '@lib/ddd';
-import { UserRecord } from '../../infrastructure';
 import { PrismaSampleService, User } from '@lib/sample-db';
 import { Prisma } from '@prisma/client/sample';
 
