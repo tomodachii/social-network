@@ -18,7 +18,7 @@ export abstract class BaseRepository<
 > implements RepositoryPort<Aggregate>
 {
   protected constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: any,
     protected readonly mapper: Mapper<Aggregate, DbRecord>,
     protected readonly eventBus: EventBus,
     protected readonly logger: LoggerPort

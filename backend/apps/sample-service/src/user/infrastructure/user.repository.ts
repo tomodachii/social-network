@@ -1,5 +1,4 @@
-import { BaseRepository } from '@lib/common/databases';
-import { PrismaSampleService, User } from '@lib/sample-db';
+import { PrismaSampleService } from '@lib/sample-db';
 import { UserRepositoryPort, UserEntity } from '../domain';
 import { UserMapper } from '../user.mapper';
 import { Injectable, Logger } from '@nestjs/common';
@@ -11,24 +10,19 @@ import { None, Option, Some } from 'oxide.ts';
  * */
 @Injectable()
 // implements UserRepositoryPort
-export class UserRepository
-  extends BaseRepository<UserEntity, User>
-  implements UserRepositoryPort
-{
+export class UserRepository implements UserRepositoryPort {
   constructor(
     protected readonly mapper: UserMapper,
     protected readonly eventBus: EventBus,
     protected readonly prisma: PrismaSampleService,
     protected readonly logger: Logger
-  ) {
-    super(prisma, mapper, eventBus, logger);
+  ) {}
+  transaction<T>(handler: () => Promise<T>): Promise<T> {
+    return this.prisma.$transaction(handler);
   }
-  // transaction<T>(handler: () => Promise<T>): Promise<T> {
-  //   return this.prisma.$transaction(handler);
-  // }
 
   async insert(entity: UserEntity): Promise<boolean> {
-    const result = await this.prisma.user.create({
+    const result = await this.prisma.userRecord.create({
       data: {
         id: entity.id,
         createdAt: entity.getPropsCopy().createdAt,
@@ -44,7 +38,7 @@ export class UserRepository
     return result !== null;
   }
   async findOneById(id: string): Promise<Option<UserEntity>> {
-    const result = await this.prisma.user.findUnique({
+    const result = await this.prisma.userRecord.findUnique({
       where: {
         id: id,
       },
@@ -52,14 +46,16 @@ export class UserRepository
     return result ? Some(this.mapper.toDomain(result)) : None;
   }
   async delete(entity: UserEntity): Promise<boolean> {
-    const result = await this.prisma.user.delete({ where: { id: entity.id } });
+    const result = await this.prisma.userRecord.delete({
+      where: { id: entity.id },
+    });
     return result !== null;
   }
 
   async updateAddress(user: UserEntity): Promise<void> {
     const address = user.getPropsCopy().address;
 
-    const result = this.prisma.user.update({
+    const result = this.prisma.userRecord.update({
       data: {
         postalCode: address.postalCode,
         country: address.country,
@@ -73,7 +69,7 @@ export class UserRepository
   }
 
   async findOneByEmail(email: string): Promise<UserEntity> {
-    const result = await this.prisma.user.findFirst({
+    const result = await this.prisma.userRecord.findFirst({
       where: {
         email: email,
       },

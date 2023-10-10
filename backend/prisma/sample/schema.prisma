@@ -14,7 +14,7 @@ datasource db {
   url      = "mysql://root:123456@localhost:3306/test_db"
 }
 
-// Error validating field `user` in model `Wallet`: The relation field `user` on model `Wallet` is missing an opposite relation field on the model `User`. Either run `prisma format` or add it manually.
+// Error validating field `user` in model `WalletRecord`: The relation field `user` on model `WalletRecord` is missing an opposite relation field on the model `UserRecord`. Either run `prisma format` or add it manually.
 
 enum UserRoles {
   admin
@@ -22,7 +22,7 @@ enum UserRoles {
   guest
 }
 
-model User {
+model UserRecord {
   id         String    @id @default(uuid())
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -35,7 +35,7 @@ model User {
   @@map("user")
 }
 
-model Wallet {
+model WalletRecord {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

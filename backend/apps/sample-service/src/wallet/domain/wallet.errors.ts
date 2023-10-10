@@ -1,7 +1,7 @@
 import { ExceptionBase } from '@lib/common/exceptions';
 
 export class WalletNotEnoughBalanceError extends ExceptionBase {
-  static readonly message = 'Wallet has not enough balance';
+  static readonly message = 'WalletRecord has not enough balance';
 
   public readonly code = 'WALLET.NOT_ENOUGH_BALANCE';
 

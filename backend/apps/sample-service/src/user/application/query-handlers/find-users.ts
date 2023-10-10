@@ -2,7 +2,7 @@ import { PaginatedParams, PaginatedQueryBase } from '@lib/ddd';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Ok, Result } from 'oxide.ts';
 import { Paginated } from '@lib/ddd';
-import { PrismaSampleService, User } from '@lib/sample-db';
+import { PrismaSampleService, UserRecord } from '@lib/sample-db';
 import { Prisma } from '@prisma/client/sample';
 
 export class FindUsersQuery extends PaginatedQueryBase {
@@ -32,19 +32,19 @@ export class FindUsersQueryHandler implements IQueryHandler {
    */
   async execute(
     query: FindUsersQuery
-  ): Promise<Result<Paginated<User>, Error>> {
-    const filterQuery: Prisma.UserWhereInput = {
+  ): Promise<Result<Paginated<UserRecord>, Error>> {
+    const filterQuery: Prisma.UserRecordWhereInput = {
       country: query.country,
       postalCode: query.postalCode,
       street: query.street,
     };
     const [data, count] = await this.prisma.$transaction([
-      this.prisma.user.findMany({
+      this.prisma.userRecord.findMany({
         skip: query.offset * query.limit,
         take: query.limit,
         where: filterQuery,
       }),
-      this.prisma.user.count({
+      this.prisma.userRecord.count({
         where: filterQuery,
       }),
     ]);

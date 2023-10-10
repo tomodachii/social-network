@@ -1,8 +1,8 @@
 import { Mapper } from '@lib/ddd';
 import { UserEntity, AddressVO, UserRoles } from './domain';
 import { Injectable } from '@nestjs/common';
-import { UserResponseDto } from './presentation';
-import { User } from '@prisma/client/sample';
+import { UserResponseDto } from './application';
+import { UserRecord } from '@prisma/client/sample';
 
 /**
  * Mapper constructs objects that are used in different layers:
@@ -12,10 +12,12 @@ import { User } from '@prisma/client/sample';
  */
 
 @Injectable()
-export class UserMapper implements Mapper<UserEntity, User, UserResponseDto> {
-  toPersistence(entity: UserEntity): User {
+export class UserMapper
+  implements Mapper<UserEntity, UserRecord, UserResponseDto>
+{
+  toPersistence(entity: UserEntity): UserRecord {
     const copy = entity.getPropsCopy();
-    const record: User = {
+    const record: UserRecord = {
       id: copy.id,
       createdAt: copy.createdAt,
       updatedAt: copy.updatedAt,
@@ -28,7 +30,7 @@ export class UserMapper implements Mapper<UserEntity, User, UserResponseDto> {
     return record;
   }
 
-  toDomain(record: User): UserEntity {
+  toDomain(record: UserRecord): UserEntity {
     const entity = new UserEntity({
       id: record.id,
       createdAt: new Date(record.createdAt),

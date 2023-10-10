@@ -1,13 +1,13 @@
 import { Mapper } from '@lib/ddd';
 import { Injectable } from '@nestjs/common';
 import { WalletEntity } from './domain';
-import { Wallet } from '@prisma/client/sample';
+import { WalletRecord } from '@prisma/client/sample';
 
 @Injectable()
-export class WalletMapper implements Mapper<WalletEntity, Wallet> {
-  toPersistence(entity: WalletEntity): Wallet {
+export class WalletMapper implements Mapper<WalletEntity, WalletRecord> {
+  toPersistence(entity: WalletEntity): WalletRecord {
     const copy = entity.getPropsCopy();
-    const record: Wallet = {
+    const record: WalletRecord = {
       id: copy.id,
       createdAt: copy.createdAt,
       updatedAt: copy.updatedAt,
@@ -17,7 +17,7 @@ export class WalletMapper implements Mapper<WalletEntity, Wallet> {
     return record;
   }
 
-  toDomain(record: Wallet): WalletEntity {
+  toDomain(record: WalletRecord): WalletEntity {
     const entity = new WalletEntity({
       id: record.id,
       createdAt: record.createdAt,

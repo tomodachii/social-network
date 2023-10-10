@@ -48,7 +48,7 @@ export class WalletEntity extends AggregateRoot<WalletProps> {
   public validate(): void {
     if (this.props.balance < 0) {
       throw new ArgumentOutOfRangeException(
-        'Wallet balance cannot be less than 0'
+        'WalletRecord balance cannot be less than 0'
       );
     }
   }
