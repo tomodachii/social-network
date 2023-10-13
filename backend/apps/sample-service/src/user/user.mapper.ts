@@ -1,8 +1,8 @@
 import { Mapper } from '@lib/ddd';
-import { UserEntity, AddressVO } from './domain';
+import { UserEntity, AddressVO, UserRoles } from './domain';
 import { Injectable } from '@nestjs/common';
-import { UserResponseDto } from './presentation';
-import { UserRecord } from './infrastructure';
+import { UserResponseDto } from './application';
+import { UserRecord } from '@prisma/client/sample';
 
 /**
  * Mapper constructs objects that are used in different layers:
@@ -37,7 +37,7 @@ export class UserMapper
       updatedAt: new Date(record.updatedAt),
       props: {
         email: record.email,
-        role: record.role,
+        role: record.role as UserRoles,
         address: new AddressVO({
           street: record.street,
           postalCode: record.postalCode,

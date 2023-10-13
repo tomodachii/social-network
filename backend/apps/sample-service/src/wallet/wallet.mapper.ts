@@ -1,7 +1,7 @@
 import { Mapper } from '@lib/ddd';
 import { Injectable } from '@nestjs/common';
 import { WalletEntity } from './domain';
-import { WalletRecord } from './infrastructure';
+import { WalletRecord } from '@prisma/client/sample';
 
 @Injectable()
 export class WalletMapper implements Mapper<WalletEntity, WalletRecord> {

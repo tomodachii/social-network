@@ -1,82 +1,79 @@
-import { UserRepositoryPort } from '../domain';
+import { PrismaSampleService } from '@lib/sample-db';
+import { UserRepositoryPort, UserEntity } from '../domain';
 import { UserMapper } from '../user.mapper';
-import { UserEntity } from '../domain/user.entity';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { MikroORM } from '@mikro-orm/core';
-import { UserRecord } from './user.record';
-import { EntityManager } from '@mikro-orm/mysql';
 import { None, Option, Some } from 'oxide.ts';
-import { BaseRepository } from '@lib/common/databases';
 
 /**
  *  Repository is used for retrieving/saving domain entities
  * */
 @Injectable()
 // implements UserRepositoryPort
-export class UserRepository
-  extends BaseRepository<UserEntity, UserRecord>
-  implements UserRepositoryPort
-{
+export class UserRepository implements UserRepositoryPort {
   constructor(
-    protected readonly orm: MikroORM,
     protected readonly mapper: UserMapper,
     protected readonly eventBus: EventBus,
-    protected readonly em: EntityManager
-  ) {
-    super(orm, mapper, eventBus, new Logger('UserRepository'));
+    protected readonly prisma: PrismaSampleService,
+    protected readonly logger: Logger
+  ) {}
+  transaction<T>(handler: () => Promise<T>): Promise<T> {
+    return this.prisma.$transaction(handler);
   }
 
   async insert(entity: UserEntity): Promise<boolean> {
-    const result = await this.em
-      .createQueryBuilder(UserRecord)
-      .insert({
+    const result = await this.prisma.userRecord.create({
+      data: {
         id: entity.id,
-        createdAt: entity.createdAt,
-        updatedAt: entity.updatedAt,
+        createdAt: entity.getPropsCopy().createdAt,
+        updatedAt: entity.getPropsCopy().updatedAt,
+        email: entity.getPropsCopy().email,
+        postalCode: entity.getPropsCopy().address.postalCode,
         country: entity.getPropsCopy().address.country,
         street: entity.getPropsCopy().address.street,
-        postalCode: entity.getPropsCopy().address.postalCode,
-        email: entity.getPropsCopy().email,
         role: entity.getPropsCopy().role,
-      })
-      .execute();
+      },
+    });
     entity.publishEvents(this.logger, this.eventBus);
-    return result.affectedRows > 0;
+    return result !== null;
   }
   async findOneById(id: string): Promise<Option<UserEntity>> {
-    const result = await this.em
-      .createQueryBuilder(UserRecord, 'u')
-      .select('*')
-      .where({ id })
-      .getSingleResult();
-    return result[0] ? Some(this.mapper.toDomain(result[0])) : None;
+    const result = await this.prisma.userRecord.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return result ? Some(this.mapper.toDomain(result)) : None;
   }
-  delete(entity: UserEntity): Promise<boolean> {
-    return this.em
-      .createQueryBuilder(UserRecord, 'u')
-      .delete()
-      .where({ id: entity.id })
-      .execute();
+  async delete(entity: UserEntity): Promise<boolean> {
+    const result = await this.prisma.userRecord.delete({
+      where: { id: entity.id },
+    });
+    return result !== null;
   }
 
-  updateAddress(user: UserEntity): Promise<void> {
+  async updateAddress(user: UserEntity): Promise<void> {
     const address = user.getPropsCopy().address;
 
-    const qb = this.em.createQueryBuilder(UserRecord, 'u');
-    return qb
-      .update({
+    const result = this.prisma.userRecord.update({
+      data: {
+        postalCode: address.postalCode,
         country: address.country,
         street: address.street,
-        postalCode: address.postalCode,
-      })
-      .where({ id: user.id })
-      .execute();
+      },
+      where: {
+        id: user.id,
+      },
+    });
+    await Promise.resolve(result);
   }
 
   async findOneByEmail(email: string): Promise<UserEntity> {
-    const qb = this.em.createQueryBuilder(UserRecord, 'u');
-    const result = await qb.select('*').where({ email }).execute();
-    return result[0] ? this.mapper.toDomain(result[0]) : null;
+    const result = await this.prisma.userRecord.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    return result ? this.mapper.toDomain(result) : null;
   }
 }

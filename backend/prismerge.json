@@ -1,0 +1,6 @@
+{
+  "sample-service": {
+    "inputs": ["./libs/sample-db/prisma/schema.prisma"],
+    "output": "./prisma/sample/schema.prisma"
+  }
+}

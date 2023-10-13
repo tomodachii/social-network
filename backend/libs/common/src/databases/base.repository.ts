@@ -8,9 +8,9 @@ import {
 import { None, Option, Some } from 'oxide.ts';
 import { LoggerPort } from '@lib/common/ports';
 import { ObjectLiteral } from '@lib/common/types';
-import { MikroORM } from '@mikro-orm/core';
 import { EventBus } from '@nestjs/cqrs';
 import { RequestContextService } from '@lib/common/application';
+import { PrismaClient } from '@prisma/client';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
@@ -18,7 +18,7 @@ export abstract class BaseRepository<
 > implements RepositoryPort<Aggregate>
 {
   protected constructor(
-    protected readonly orm: MikroORM,
+    protected readonly prisma: any,
     protected readonly mapper: Mapper<Aggregate, DbRecord>,
     protected readonly eventBus: EventBus,
     protected readonly logger: LoggerPort
@@ -28,16 +28,6 @@ export abstract class BaseRepository<
    * results of all event handlers in one operation
    */
   public async transaction<T>(handler: () => Promise<T>): Promise<T> {
-    const em = this.orm.em.fork();
-    await em.begin();
-    let result: Promise<T>;
-    try {
-      result = handler();
-      await em.commit(); // will flush before making the actual commit query
-    } catch (e) {
-      await em.rollback();
-      throw e;
-    }
-    return result;
+    return this.prisma.$transaction(handler);
   }
 }

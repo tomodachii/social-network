@@ -1,15 +1,15 @@
 import { Logger, Module, Provider } from '@nestjs/common';
-import { UserRecord, UserRepository } from './infrastructure';
 import { UserMapper } from './user.mapper';
 import { CqrsModule } from '@nestjs/cqrs';
 import { USER_REPOSITORY } from './user.di-tokens';
-import { UserHttpController, UserMessageController } from './presentation';
+import { UserHttpController, UserMessageController } from './api';
 import {
   CreateUserCommandHandler,
   DeleteUserCommandHandler,
   FindUsersQueryHandler,
 } from './application';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { UserRepository } from './infrastructure';
+import { PrismaSampleService } from '@lib/sample-db';
 
 const httpControllers = [UserHttpController];
 
@@ -29,10 +29,11 @@ const repositories: Provider[] = [
 ];
 
 @Module({
-  imports: [CqrsModule, MikroOrmModule.forFeature([UserRecord])],
+  imports: [CqrsModule],
   controllers: [...httpControllers, ...messageControllers],
   providers: [
     Logger,
+    PrismaSampleService,
     ...repositories,
     ...commandHandlers,
     ...queryHandlers,
