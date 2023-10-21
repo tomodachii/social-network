@@ -29,11 +29,7 @@ import {
   CreateUserRequestDto,
   UserPaginatedResponseDto,
   FindUsersRequestDto,
-<<<<<<<< HEAD:backend/apps/sample-service/src/user/application/api/user.http.controller.ts
-} from '..';
-========
-} from '../application';
->>>>>>>> dca4cdd78e674d122ba2f747fd205aa1ca07619c:backend/apps/sample-service/src/user/api/user.http.controller.ts
+} from '../';
 import { UserRecord } from '@prisma/client/sample';
 
 @Controller('user')
