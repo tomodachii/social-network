@@ -20,7 +20,7 @@ import {
   PaginatedQueryRequestDto,
   ResponseBase,
 } from '@lib/common/api';
-import { UserAlreadyExistsError } from '../domain';
+import { UserAlreadyExistsError } from '../../domain';
 import { NotFoundException } from '@lib/common/exceptions';
 import {
   CreateUserCommand,
@@ -29,7 +29,7 @@ import {
   CreateUserRequestDto,
   UserPaginatedResponseDto,
   FindUsersRequestDto,
-} from '../application';
+} from '..';
 import { UserRecord } from '@prisma/client/sample';
 
 @Controller('user')
