@@ -2,8 +2,9 @@ import { Logger, Module, Provider } from '@nestjs/common';
 import { UserMapper } from './user.mapper';
 import { CqrsModule } from '@nestjs/cqrs';
 import { USER_REPOSITORY } from './user.di-tokens';
-import { UserHttpController, UserMessageController } from './application/api';
 import {
+  UserHttpController,
+  UserMessageController,
   CreateUserCommandHandler,
   DeleteUserCommandHandler,
   FindUsersQueryHandler,
