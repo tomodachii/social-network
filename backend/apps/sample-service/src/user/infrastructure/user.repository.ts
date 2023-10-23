@@ -1,4 +1,5 @@
-import { PrismaSampleService } from '@lib/sample-db';
+import { PrismaSampleService, UserRecord } from '@lib/sample-db';
+import { BaseRepository } from '@lib/common/databases';
 import { UserRepositoryPort, UserEntity } from '../domain';
 import { UserMapper } from '../user.mapper';
 import { Injectable, Logger } from '@nestjs/common';
@@ -10,13 +11,18 @@ import { None, Option, Some } from 'oxide.ts';
  * */
 @Injectable()
 // implements UserRepositoryPort
-export class UserRepository implements UserRepositoryPort {
+export class UserRepository
+  extends BaseRepository<UserEntity, UserRecord>
+  implements UserRepositoryPort
+{
   constructor(
     protected readonly mapper: UserMapper,
     protected readonly eventBus: EventBus,
     protected readonly prisma: PrismaSampleService,
     protected readonly logger: Logger
-  ) {}
+  ) {
+    super(mapper, eventBus, logger);
+  }
   transaction<T>(handler: () => Promise<T>): Promise<T> {
     return this.prisma.$transaction(handler);
   }

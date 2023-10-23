@@ -1,3 +1,5 @@
+import { ObjectLiteral } from '../types';
+
 export class Guard {
   /**
    * Checks if value is empty. Accepts strings, numbers, booleans, objects and arrays.
@@ -51,5 +53,9 @@ export class Guard {
       return true;
     }
     return false;
+  }
+
+  static isValueInEnum<T>(value: T, enumuration: ObjectLiteral): boolean {
+    return Object.values(enumuration).includes(value);
   }
 }
