@@ -20,3 +20,17 @@ services:
       - ./nginx-config/api_gateway.conf:/etc/nginx/api_gateway.conf:ro
       - ./nginx-config/api_json_errors.conf:/etc/nginx/api_json_errors.conf:ro
       - ./nginx-config/api_keys.conf:/etc/nginx/api_keys.conf:ro
+    extra_hosts:
+      - "${HOST_NAME}:${HOST_GATEWAY}"
+    networks:
+      - socialnetwork_backend
+
+networks:
+  socialnetwork_backend:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${HOST_SUBNET}
+          gateway: ${HOST_GATEWAY}
+
+# https://datatracker.ietf.org/doc/html/rfc1918
