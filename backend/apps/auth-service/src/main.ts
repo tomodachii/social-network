@@ -7,11 +7,10 @@ import express from 'express';
 import * as path from 'path';
 import jwt from 'jsonwebtoken';
 
-
 const app = express();
 
-app.use(express.urlencoded({extended: true}));
-app.use(express.json()) // To parse the incoming requests with JSON payloads
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
@@ -24,10 +23,10 @@ app.post('/encode', (req, res) => {
     const token = jwt.sign({ username: username }, privateKey);
     console.log(token);
     res.send({
-      "meta": {},
-      "data": {
-        "token": token
-      }
+      meta: {},
+      data: {
+        token: token,
+      },
     });
   } else {
     res.status(401).send('Authentication failed');
@@ -35,7 +34,6 @@ app.post('/encode', (req, res) => {
 });
 
 let privateKey = 'abdc';
-
 
 app.get('/decode', (req, res) => {
   try {
@@ -68,8 +66,8 @@ app.get('/decode', (req, res) => {
         console.log(decoded.username);
         res.set({
           'X-Username': decoded.username,
-          'X-iat': decoded.iat
-        })
+          'X-iat': decoded.iat,
+        });
         res.send();
       }
     });

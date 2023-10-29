@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client/user"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/user_db"
+}
+
+enum GenderEnum {
+  male
+  female
+  other
+}
+
+enum BioImageEnum {
+  avatar
+  cover
+}
+
+model UserRecord {
+  id         String          @id @default(uuid())
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  version    Int             @default(0)
+  firstName  String
+  lastName   String
+  gender     GenderEnum
+  birthDay   DateTime
+  bio        String?
+  postalCode String?
+  city       String?
+  configId   String?         @unique
+  config     ConfigRecord?
+  avatarId   String?         @unique
+  avatar     BioImageRecord? @relation("Avatar", fields: [avatarId], references: [id])
+  coverId    String?         @unique
+  cover      BioImageRecord? @relation("Cover", fields: [coverId], references: [id])
+
+  @@map("user")
+}
+
+model BioImageRecord {
+  id         String       @id @default(uuid())
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  type       BioImageEnum
+  extension  String
+  size       Int
+  avatarUser UserRecord?  @relation("Avatar")
+  coverUser  UserRecord?  @relation("Cover")
+
+  @@map("bio_image")
+}
+
+model ConfigRecord {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String     @unique
+  user      UserRecord @relation(fields: [userId], references: [id])
+
+  @@map("config")
+}
