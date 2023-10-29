@@ -1,2 +1,2 @@
 export * from './user.repository';
-export * from './prisma.user.service';
+export * from '../../../database/prisma.user.service';

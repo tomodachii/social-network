@@ -8,34 +8,35 @@ datasource db {
   url      = "mysql://root:123456@localhost:3306/user_db"
 }
 
-enum Gender {
+enum GenderEnum {
   male
   female
   other
 }
 
-enum BioImageType {
+enum BioImageEnum {
   avatar
   cover
 }
 
 model UserRecord {
-  id          String          @id @default(uuid())
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  firstName   String
-  lastName    String
-  gender      Gender
-  bio         String?
-  dateOfBirth DateTime?
-  postalCode  String?
-  city        String?
-  configId    String?         @unique
-  config      ConfigRecord?
-  avatarId    String?         @unique
-  avatar      BioImageRecord? @relation("Avatar", fields: [avatarId], references: [id])
-  coverId     String?         @unique
-  cover       BioImageRecord? @relation("Cover", fields: [coverId], references: [id])
+  id         String          @id @default(uuid())
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  version    Int             @default(0)
+  firstName  String
+  lastName   String
+  gender     GenderEnum
+  birthDay   DateTime
+  bio        String?
+  postalCode String?
+  city       String?
+  configId   String?         @unique
+  config     ConfigRecord?
+  avatarId   String?         @unique
+  avatar     BioImageRecord? @relation("Avatar", fields: [avatarId], references: [id])
+  coverId    String?         @unique
+  cover      BioImageRecord? @relation("Cover", fields: [coverId], references: [id])
 
   @@map("user")
 }
@@ -44,7 +45,7 @@ model BioImageRecord {
   id         String       @id @default(uuid())
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  type       BioImageType
+  type       BioImageEnum
   extension  String
   size       Int
   avatarUser UserRecord?  @relation("Avatar")

@@ -1,17 +1,12 @@
 import { BaseRepository } from '@lib/common/databases';
-import {
-  BioImage,
-  BioImageEntity,
-  BioImageType,
-  UserEntity,
-  UserRepositoryPort,
-} from '../../domain';
-import { PrismaUserService, UserRecord } from './prisma.user.service';
+import { BioImageType, UserEntity, UserRepositoryPort } from '../../domain';
+import { PrismaUserService, UserRecord } from '../../../database';
 import { EventBus } from '@nestjs/cqrs';
 import { UserMapper } from '../../user.mapper';
-import { Logger } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { None, Option, Some } from 'oxide.ts';
 
+@Injectable()
 export class UserRepository
   extends BaseRepository<UserEntity, UserRecord>
   implements UserRepositoryPort
@@ -25,12 +20,18 @@ export class UserRepository
     super(mapper, eventBus, logger);
   }
 
-  transaction<T>(handler: () => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(handler);
-  }
-
-  insertOne(user: UserEntity): Promise<void> {
-    throw new Error('Method not implemented.');
+  async insertOne(user: UserEntity): Promise<boolean> {
+    const record = this.mapper.toPersistence(user);
+    const createUser = this.prisma.userRecord.create({
+      data: {
+        firstName: record.firstName,
+        lastName: record.lastName,
+        gender: record.gender,
+        id: record.id,
+        birthDay: record.birthDay,
+      },
+    });
+    return (await createUser) !== null;
   }
 
   async findById(userId: string): Promise<Option<UserEntity>> {
@@ -87,19 +88,12 @@ export class UserRepository
 
   async deleteBioImage(user: UserEntity, type: BioImageType): Promise<void> {
     const userRecord = this.mapper.toPersistence(user);
-
-    const currentBioImage = await this.prisma.bioImageRecord.findFirst({
+    await this.prisma.bioImageRecord.deleteMany({
       where: {
         avatarUser: {
           id: userRecord.id,
         },
         type: type,
-      },
-    });
-
-    await this.prisma.bioImageRecord.delete({
-      where: {
-        id: currentBioImage.id,
       },
     });
   }
@@ -113,9 +107,12 @@ export class UserRepository
         lastName: record.lastName,
         gender: record.gender,
         bio: record.bio,
-        dateOfBirth: record.dateOfBirth,
+        birthDay: record.birthDay,
         postalCode: record.postalCode,
         city: record.city,
+        version: {
+          increment: 1,
+        },
       },
     });
   }

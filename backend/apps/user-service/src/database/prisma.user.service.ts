@@ -5,7 +5,7 @@ export * from '@prisma/client/user';
 export type UserPrersistent = UserRecord & {
   avatar: BioImageRecord;
   cover: BioImageRecord;
-};
+} & { version?: number };
 
 @Injectable()
 export class PrismaUserService extends PrismaClient implements OnModuleInit {

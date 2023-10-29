@@ -44,7 +44,7 @@ export class UserResponseDto {
   bio?: string;
 
   @Expose()
-  dateOfBirth?: Date;
+  birthDay?: Date;
 
   @Expose()
   @Transform(() => AddressDto)

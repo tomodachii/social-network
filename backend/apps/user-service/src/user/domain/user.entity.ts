@@ -11,8 +11,8 @@ export interface UserProps {
   lastName: string;
   fullName?: string;
   gender: Gender;
+  birthDay: Date;
   bio?: string;
-  dateOfBirth?: Date;
   address?: AddressVO;
   avatar?: BioImageEntity;
   cover?: BioImageEntity;
@@ -23,6 +23,7 @@ export interface CreateUserProps {
   firstName: string;
   lastName: string;
   gender: Gender;
+  birthDay: Date;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
@@ -70,12 +71,12 @@ export class UserEntity extends AggregateRoot<UserProps> {
     this.props.gender = gender;
   }
 
-  get dateOfBirth(): Date {
-    return this.props.dateOfBirth;
+  get birthDay(): Date {
+    return this.props.birthDay;
   }
 
-  set dateOfBirth(dateOfBirth: Date) {
-    this.props.dateOfBirth = dateOfBirth;
+  set birthDay(birthDay: Date) {
+    this.props.birthDay = birthDay;
   }
 
   updateAvatar(avatarProps: CreateBioImageProps): void {
