@@ -13,6 +13,7 @@ services:
       - socialnetwork_backend
   nginx:
     image: nginx:latest
+    restart: always
     ports:
       - '8080:80'
     volumes:
