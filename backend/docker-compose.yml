@@ -1,18 +1,20 @@
 version: '3'
 services:
-  # mysql:
-  #   image: mysql:8.0.30
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: 123456
-  #     MYSQL_DATABASE: test_db
-  #     MYSQL_USER: user
-  #     MYSQL_PASSWORD: 123456
-  #   ports:
-  #     - '3306:3306'
+  mysql:
+    image: mysql:8.0.30
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    ports:
+      - '3306:3306'
+    networks:
+      - socialnetwork_backend
   nginx:
     image: nginx:latest
     ports:
-      - "8080:80"
+      - '8080:80'
     volumes:
       - ./nginx-config/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-config/api_conf.d/:/etc/nginx/api_conf.d/:ro
@@ -21,7 +23,7 @@ services:
       - ./nginx-config/api_json_errors.conf:/etc/nginx/api_json_errors.conf:ro
       - ./nginx-config/api_keys.conf:/etc/nginx/api_keys.conf:ro
     extra_hosts:
-      - "${HOST_NAME}:${HOST_GATEWAY}"
+      - '${HOST_NAME}:${HOST_GATEWAY}'
     networks:
       - socialnetwork_backend
 
@@ -32,5 +34,4 @@ networks:
       config:
         - subnet: ${HOST_SUBNET}
           gateway: ${HOST_GATEWAY}
-
 # https://datatracker.ietf.org/doc/html/rfc1918
