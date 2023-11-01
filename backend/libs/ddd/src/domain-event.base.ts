@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { ArgumentNotProvidedException } from '@lib/common/exceptions';
 import { Guard } from '@lib/common/utils';
 import { v4 } from 'uuid';
@@ -38,7 +39,8 @@ export abstract class DomainEvent {
   constructor(props: DomainEventProps<unknown>) {
     if (Guard.isEmpty(props)) {
       throw new ArgumentNotProvidedException(
-        'DomainEvent props should not be empty'
+        'DomainEvent props should not be empty',
+        HttpStatus.BAD_REQUEST
       );
     }
     this.id = v4();

@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import {
   ArgumentNotProvidedException,
   ArgumentInvalidException,
@@ -139,15 +140,20 @@ export abstract class Entity<EntityProps> {
 
     if (Guard.isEmpty(props)) {
       throw new ArgumentNotProvidedException(
-        'Entity props should not be empty'
+        'Entity props should not be empty',
+        HttpStatus.BAD_REQUEST
       );
     }
     if (typeof props !== 'object') {
-      throw new ArgumentInvalidException('Entity props should be an object');
+      throw new ArgumentInvalidException(
+        'Entity props should be an object',
+        HttpStatus.BAD_REQUEST
+      );
     }
     if (Object.keys(props as any).length > MAX_PROPS) {
       throw new ArgumentOutOfRangeException(
-        `Entity props should not have more than ${MAX_PROPS} properties`
+        `Entity props should not have more than ${MAX_PROPS} properties`,
+        HttpStatus.BAD_REQUEST
       );
     }
   }

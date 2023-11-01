@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { Gender } from './user.type';
 import { AddressProps, AddressVO } from './value-objects';
 import { ConfigEntity, BioImageEntity, CreateBioImageProps } from './entities';
+import { HttpStatus } from '@nestjs/common';
 
 export interface UserProps {
   firstName: string;
@@ -46,16 +47,12 @@ export class UserEntity extends AggregateRoot<UserProps> {
   }
 
   set firstName(firstName: string) {
-    if (Guard.isEmpty(firstName)) {
-      throw new ArgumentNotProvidedException('first name must not be empty');
-    }
+    this.validate();
     this.props.firstName = firstName;
   }
 
   set lastName(lastName: string) {
-    if (Guard.isEmpty(lastName)) {
-      throw new ArgumentNotProvidedException('last name must not be empty');
-    }
+    this.validate();
     this.props.lastName = lastName;
   }
 
@@ -100,10 +97,16 @@ export class UserEntity extends AggregateRoot<UserProps> {
 
   public validate(): void {
     if (Guard.isEmpty(this.props.firstName)) {
-      throw new ArgumentNotProvidedException('first name must not be empty');
+      throw new ArgumentNotProvidedException(
+        'first name must not be empty',
+        HttpStatus.BAD_REQUEST
+      );
     }
     if (Guard.isEmpty(this.props.lastName)) {
-      throw new ArgumentNotProvidedException('last name must not be empty');
+      throw new ArgumentNotProvidedException(
+        'last name must not be empty',
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }

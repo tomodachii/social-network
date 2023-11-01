@@ -5,6 +5,7 @@ import { Inject } from '@nestjs/common';
 import { Ok, Result } from 'oxide.ts';
 import { AUTH_SERVICE_PROXY, USER_REPOSITORY } from '../../user.di-token';
 import { AuthServiceProxyPort } from '@lib/auth-service-proxy';
+import { Exception } from '@lib/common/exceptions';
 
 export class CreateUserCommand extends Command {
   readonly email: string;
@@ -53,6 +54,10 @@ export class CreateUserCommandHandler implements ICommandHandler {
       password: command.password,
       phoneNumber: command.phoneNumber,
     });
+
+    if (!credential.meta.isSuccess) {
+      throw new Exception(credential.meta.message, credential.meta.status);
+    }
 
     try {
       this.userRepo.insertOne(user);

@@ -5,6 +5,7 @@ import {
 } from '@lib/common/exceptions';
 import { BioImageType } from '../user.type';
 import { v4 } from 'uuid';
+import { HttpStatus } from '@nestjs/common';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
@@ -42,12 +43,14 @@ export class BioImageEntity extends Entity<BioImageProps> {
   public validate(): void {
     if (this.props.size > 5012) {
       throw new ArgumentOutOfRangeException(
-        'image size must not be greater than 5MB'
+        'image size must not be greater than 5MB',
+        HttpStatus.BAD_REQUEST
       );
     }
     if (this.isInValidImageExtesion(this.props.extension)) {
       throw new ArgumentInvalidException(
-        'image extension must be jpg, jpeg, png'
+        'image extension must be jpg, jpeg, png',
+        HttpStatus.BAD_REQUEST
       );
     }
   }

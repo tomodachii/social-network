@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { RequestContextService } from '@lib/common/application';
 import { v4 } from 'uuid';
 import { ArgumentNotProvidedException } from '@lib/common/exceptions';
@@ -39,7 +40,8 @@ export class Command {
   constructor(props: CommandProps<unknown>) {
     if (Guard.isEmpty(props)) {
       throw new ArgumentNotProvidedException(
-        'Command props should not be empty'
+        'Command props should not be empty',
+        HttpStatus.BAD_REQUEST
       );
     }
     const ctx = RequestContextService.getContext();
