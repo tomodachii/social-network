@@ -1,8 +1,12 @@
-import { AxiosResponse } from 'axios';
-import { CreateCredentialDto } from './dtos';
+import { BaseResponse } from '@lib/common/api';
+import {
+  CreateCredentialPayload,
+  CreateCredentialResponse,
+} from './interfaces';
 
 export interface AuthServiceProxyPort {
   createCredentials(
-    credential: CreateCredentialDto
-  ): Promise<AxiosResponse<string>>;
+    credential: CreateCredentialPayload
+  ): Promise<BaseResponse<CreateCredentialResponse>>;
+  rollbackSaveCredential(userId: string): Promise<BaseResponse<boolean>>;
 }

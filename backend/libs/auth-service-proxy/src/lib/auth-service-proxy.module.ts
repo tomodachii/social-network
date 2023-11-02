@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { HttpAuthServiceProxy } from './adapters';
+import { MockAuthServiceProxy } from './adapters';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [HttpModule],
-  providers: [HttpAuthServiceProxy],
-  exports: [HttpModule, HttpAuthServiceProxy],
+  providers: [MockAuthServiceProxy],
+  exports: [HttpModule, MockAuthServiceProxy],
 })
 export class AuthServiceProxyModule {}
