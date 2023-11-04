@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { RequestContextService } from '../application';
 
 export interface SerializedException {
@@ -20,11 +21,11 @@ export interface SerializedException {
  * Base class for custom exceptions.
  *
  * @abstract
- * @class ExceptionBase
+ * @class Exception
  * @extends {Error}
  */
-export abstract class ExceptionBase extends Error {
-  abstract code: string;
+export class Exception extends Error {
+  public readonly code: string = '';
 
   public readonly correlationId: string;
 
@@ -38,10 +39,12 @@ export abstract class ExceptionBase extends Error {
    */
   constructor(
     override readonly message: string,
+    readonly status: HttpStatus,
     readonly cause?: Error,
     readonly metadata?: unknown
   ) {
     super(message);
+    this.status = status;
     Error.captureStackTrace(this, this.constructor);
     const ctx = RequestContextService.getContext();
     this.correlationId = ctx.requestId;

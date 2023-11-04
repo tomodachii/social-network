@@ -1,29 +1,38 @@
 import {
   AuthServiceProxyModule,
-  HttpAuthServiceProxy,
+  MockAuthServiceProxy,
 } from '@lib/auth-service-proxy';
 import { Module, Provider, Logger } from '@nestjs/common';
 import { UserController } from './application/api';
-import { CreateUserCommandHandler } from './application';
+import {
+  CreateUserCommandHandler,
+  UpdateAvatarCommandHandler,
+  UpdateCoverCommandHandler,
+  FindUserByIdQueryHandler,
+} from './application';
 import { UserMapper } from './user.mapper';
 import { AUTH_SERVICE_PROXY, USER_REPOSITORY } from './user.di-token';
 import { UserRepository } from './infrastructure';
 import { CqrsModule } from '@nestjs/cqrs';
-import { DatabaseModule, PrismaUserService } from '../database';
+import { DatabaseModule } from '../database';
 
 const httpControllers = [UserController];
 
 // const messageControllers = [UserMessageController];
 
-const commandHandlers: Provider[] = [CreateUserCommandHandler];
+const commandHandlers: Provider[] = [
+  CreateUserCommandHandler,
+  UpdateAvatarCommandHandler,
+  UpdateCoverCommandHandler,
+];
 
-// const queryHandlers: Provider[] = [FindUsersQueryHandler];
+const queryHandlers: Provider[] = [FindUserByIdQueryHandler];
 
 const mappers: Provider[] = [UserMapper];
 
 const repositories: Provider[] = [
   { provide: USER_REPOSITORY, useClass: UserRepository },
-  { provide: AUTH_SERVICE_PROXY, useClass: HttpAuthServiceProxy },
+  { provide: AUTH_SERVICE_PROXY, useClass: MockAuthServiceProxy },
 ];
 
 @Module({
@@ -31,9 +40,9 @@ const repositories: Provider[] = [
   controllers: [...httpControllers],
   providers: [
     Logger,
-    PrismaUserService,
     ...repositories,
     ...commandHandlers,
+    ...queryHandlers,
     ...mappers,
   ],
 })

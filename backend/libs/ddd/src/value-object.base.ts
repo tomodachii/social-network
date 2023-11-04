@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { ArgumentNotProvidedException } from '@lib/common/exceptions';
 import { Guard } from '@lib/common/utils';
 import { convertPropsToObject } from './utils';
@@ -56,7 +57,10 @@ export abstract class ValueObject<T> {
       Guard.isEmpty(props) ||
       (this.isDomainPrimitive(props) && Guard.isEmpty(props.value))
     ) {
-      throw new ArgumentNotProvidedException('Property cannot be empty');
+      throw new ArgumentNotProvidedException(
+        'Property cannot be empty',
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 

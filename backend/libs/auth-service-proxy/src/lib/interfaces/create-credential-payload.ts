@@ -1,4 +1,4 @@
-export interface CreateCredentialDto {
+export interface CreateCredentialPayload {
   email: string;
 
   phoneNumber: string;

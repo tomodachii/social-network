@@ -1,1 +1,1 @@
-export * from './http-auth-service-proxy';
+export * from './mock-auth-service-proxy';

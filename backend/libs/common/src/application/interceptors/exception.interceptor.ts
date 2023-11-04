@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ExceptionBase } from '@lib/common/exceptions';
+import { Exception } from '@lib/common/exceptions';
 import { RequestContextService } from '../context/AppRequestContext';
 import { ApiErrorResponse } from '@lib/common/api';
 
@@ -17,7 +17,7 @@ export class ExceptionInterceptor implements NestInterceptor {
   intercept(
     _context: ExecutionContext,
     next: CallHandler
-  ): Observable<ExceptionBase> {
+  ): Observable<Exception> {
     return next.handle().pipe(
       catchError((err) => {
         // Logging for debugging purposes

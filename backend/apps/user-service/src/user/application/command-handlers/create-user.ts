@@ -5,6 +5,8 @@ import { Inject } from '@nestjs/common';
 import { Ok, Result } from 'oxide.ts';
 import { AUTH_SERVICE_PROXY, USER_REPOSITORY } from '../../user.di-token';
 import { AuthServiceProxyPort } from '@lib/auth-service-proxy';
+import { Exception } from '@lib/common/exceptions';
+import { CreateUserResponseDto } from '../dtos';
 
 export class CreateUserCommand extends Command {
   readonly email: string;
@@ -28,7 +30,9 @@ export class CreateUserCommand extends Command {
 }
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserCommandHandler implements ICommandHandler {
+export class CreateUserCommandHandler
+  implements ICommandHandler<CreateUserCommand>
+{
   constructor(
     @Inject(USER_REPOSITORY)
     protected readonly userRepo: UserRepositoryPort,
@@ -38,7 +42,7 @@ export class CreateUserCommandHandler implements ICommandHandler {
 
   async execute(
     command: CreateUserCommand
-  ): Promise<Result<AggregateID, Error>> {
+  ): Promise<Result<CreateUserResponseDto, Error>> {
     const user = UserEntity.create({
       firstName: command.firstName,
       lastName: command.lastName,
@@ -54,12 +58,22 @@ export class CreateUserCommandHandler implements ICommandHandler {
       phoneNumber: command.phoneNumber,
     });
 
+    if (!credential.meta.isSuccess) {
+      throw new Exception(credential.meta.message, credential.meta.status);
+    }
+
     try {
       this.userRepo.insertOne(user);
 
-      return Ok(user.id);
+      return Ok({
+        token: credential.data.token,
+        refreshToken: credential.data.refreshToken,
+        expired: credential.data.expired,
+        userId: user.id,
+      });
     } catch (error: any) {
       // Todos rollback
+      await this.authServiceProxy.rollbackSaveCredential(user.id);
       throw error;
     }
   }

@@ -1,7 +1,10 @@
+import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 interface ResponseMetaData {
   message: string;
+  isSuccess: boolean;
+  status: HttpStatus;
   serviceId: string;
   extraMeta: any;
 }
@@ -15,7 +18,13 @@ export class BaseResponse<T> {
 
   constructor(
     data: T,
-    meta: ResponseMetaData = { message: '', serviceId: '', extraMeta: {} }
+    meta: ResponseMetaData = {
+      message: '',
+      isSuccess: true,
+      status: HttpStatus.OK,
+      serviceId: '',
+      extraMeta: {},
+    }
   ) {
     this.data = data;
     this.meta = meta;

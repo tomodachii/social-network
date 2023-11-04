@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import {
   ARGUMENT_INVALID,
   ARGUMENT_NOT_PROVIDED,
@@ -6,26 +7,26 @@ import {
   INTERNAL_SERVER_ERROR,
   NOT_FOUND,
 } from '.';
-import { ExceptionBase } from './exception.base';
+import { Exception } from './exception.base';
 
 /**
  * Used to indicate that an incorrect argument was provided to a method/function/class constructor
  *
  * @class ArgumentInvalidException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class ArgumentInvalidException extends ExceptionBase {
-  readonly code = ARGUMENT_INVALID;
+export class ArgumentInvalidException extends Exception {
+  override readonly code = ARGUMENT_INVALID;
 }
 
 /**
  * Used to indicate that an argument was not provided (is empty object/array, null of undefined).
  *
  * @class ArgumentNotProvidedException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class ArgumentNotProvidedException extends ExceptionBase {
-  readonly code = ARGUMENT_NOT_PROVIDED;
+export class ArgumentNotProvidedException extends Exception {
+  override readonly code = ARGUMENT_NOT_PROVIDED;
 }
 
 /**
@@ -33,50 +34,56 @@ export class ArgumentNotProvidedException extends ExceptionBase {
  * (for example: incorrect string/array length, number not in allowed min/max range etc)
  *
  * @class ArgumentOutOfRangeException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class ArgumentOutOfRangeException extends ExceptionBase {
-  readonly code = ARGUMENT_OUT_OF_RANGE;
+export class ArgumentOutOfRangeException extends Exception {
+  override readonly code = ARGUMENT_OUT_OF_RANGE;
 }
 
 /**
  * Used to indicate conflicting entities (usually in the database)
  *
  * @class ConflictException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class ConflictException extends ExceptionBase {
-  readonly code = CONFLICT;
+export class ConflictException extends Exception {
+  override readonly code = CONFLICT;
 }
 
 /**
  * Used to indicate that entity is not found
  *
  * @class NotFoundException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class NotFoundException extends ExceptionBase {
+export class NotFoundException extends Exception {
   static readonly message = 'Not found';
 
-  constructor(message = NotFoundException.message) {
-    super(message);
+  constructor(
+    message = NotFoundException.message,
+    status = HttpStatus.NOT_FOUND
+  ) {
+    super(message, status);
   }
 
-  readonly code = NOT_FOUND;
+  override readonly code = NOT_FOUND;
 }
 
 /**
  * Used to indicate that entity is not found
  *
  * @class NotFoundException
- * @extends {ExceptionBase}
+ * @extends {Exception}
  */
-export class InternalServerErrorException extends ExceptionBase {
+export class InternalServerErrorException extends Exception {
   static readonly message = 'Internal server error';
 
-  constructor(message = InternalServerErrorException.message) {
-    super(message);
+  constructor(
+    message = InternalServerErrorException.message,
+    status = HttpStatus.INTERNAL_SERVER_ERROR
+  ) {
+    super(message, status);
   }
 
-  readonly code = INTERNAL_SERVER_ERROR;
+  override readonly code = INTERNAL_SERVER_ERROR;
 }

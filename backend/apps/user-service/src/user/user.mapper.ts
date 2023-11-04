@@ -46,30 +46,39 @@ export class UserMapper
         gender: record.gender as Gender,
         bio: record.bio,
         birthDay: new Date(record.birthDay),
-        address: new AddressVO({
-          postalCode: record.postalCode,
-          city: record.city,
-        }),
-        config: new ConfigEntity({
-          id: record.configId,
-          props: {},
-        }),
-        avatar: new BioImageEntity({
-          id: record.avatarId,
-          props: {
-            extension: record.avatar.extension,
-            size: record.avatar.size,
-            type: record.avatar.type as BioImageType,
-          },
-        }),
-        cover: new BioImageEntity({
-          id: record.coverId,
-          props: {
-            extension: record.cover.extension,
-            size: record.cover.size,
-            type: record.cover.type as BioImageType,
-          },
-        }),
+        address:
+          record.postalCode &&
+          record.city &&
+          new AddressVO({
+            postalCode: record.postalCode,
+            city: record.city,
+          }),
+        config:
+          record.configId &&
+          new ConfigEntity({
+            id: record.configId,
+            props: {},
+          }),
+        avatar:
+          record.avatar &&
+          new BioImageEntity({
+            id: record.avatarId,
+            props: {
+              extension: record.avatar.extension,
+              size: record.avatar.size,
+              type: record.avatar.type as BioImageType,
+            },
+          }),
+        cover:
+          record.cover &&
+          new BioImageEntity({
+            id: record.coverId,
+            props: {
+              extension: record.cover.extension,
+              size: record.cover.size,
+              type: record.cover.type as BioImageType,
+            },
+          }),
       },
     });
     return entity;

@@ -1,6 +1,7 @@
 import { ValueObject } from '@lib/ddd';
 import { Guard } from '@lib/common/utils';
 import { ArgumentOutOfRangeException } from '@lib/common/exceptions';
+import { HttpStatus } from '@nestjs/common';
 
 /** Note:
  * Value Objects with multiple properties can contain
@@ -30,10 +31,16 @@ export class AddressVO extends ValueObject<AddressProps> {
    */
   protected validate(props: AddressProps): void {
     if (!Guard.lengthIsBetween(props.city, 2, 50)) {
-      throw new ArgumentOutOfRangeException('city is out of range');
+      throw new ArgumentOutOfRangeException(
+        'city is out of range',
+        HttpStatus.BAD_REQUEST
+      );
     }
     if (!Guard.lengthIsBetween(props.postalCode, 2, 10)) {
-      throw new ArgumentOutOfRangeException('postalCode is out of range');
+      throw new ArgumentOutOfRangeException(
+        'postalCode is out of range',
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }
