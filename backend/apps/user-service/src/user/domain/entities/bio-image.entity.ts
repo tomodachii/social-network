@@ -4,10 +4,10 @@ import {
   ArgumentOutOfRangeException,
 } from '@lib/common/exceptions';
 import { BioImageType } from '../user.type';
-import { v4 } from 'uuid';
+import { validate as uuidValidate } from 'uuid';
 import { HttpStatus } from '@nestjs/common';
 
-const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
+const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png'];
 
 export interface BioImageProps {
   type: BioImageType;
@@ -16,6 +16,7 @@ export interface BioImageProps {
 }
 
 export interface CreateBioImageProps {
+  id: string;
   extension: string;
   size: number;
 }
@@ -23,24 +24,28 @@ export interface CreateBioImageProps {
 export class BioImageEntity extends Entity<BioImageProps> {
   protected _id: string;
   static createAvatar(create: CreateBioImageProps): BioImageEntity {
-    const id = v4();
     const props: BioImageProps = {
       ...create,
       type: BioImageType.AVATAR,
     };
-    return new BioImageEntity({ id, props });
+    return new BioImageEntity({ id: create.id, props });
   }
 
   static createCover(create: CreateBioImageProps): BioImageEntity {
-    const id = v4();
     const props: BioImageProps = {
       ...create,
       type: BioImageType.COVER,
     };
-    return new BioImageEntity({ id, props });
+    return new BioImageEntity({ id: create.id, props });
   }
 
   public validate(): void {
+    if (uuidValidate(this._id) === false) {
+      throw new ArgumentInvalidException(
+        'file id must be uuid',
+        HttpStatus.BAD_REQUEST
+      );
+    }
     if (this.props.size > 5012) {
       throw new ArgumentOutOfRangeException(
         'image size must not be greater than 5MB',

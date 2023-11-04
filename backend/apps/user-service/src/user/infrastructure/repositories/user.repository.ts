@@ -45,62 +45,79 @@ export class UserRepository
     return record ? Some(this.mapper.toDomain(record)) : None;
   }
 
-  async updateAvatar(user: UserEntity): Promise<void> {
+  async updateAvatar(user: UserEntity): Promise<boolean> {
     const userRecord = this.mapper.toPersistence(user);
     const avatarRecord = userRecord.avatar;
-    await this.prisma.bioImageRecord.create({
-      data: {
-        extension: avatarRecord.extension,
-        size: avatarRecord.size,
-        type: avatarRecord.type,
-        id: avatarRecord.id,
-        createdAt: avatarRecord.createdAt,
-        updatedAt: avatarRecord.updatedAt,
-        avatarUser: {
-          connect: {
-            id: userRecord.id,
+    const [deleteAvatar, createAvatar] = await this.prisma.$transaction([
+      this.deleteBioImage(user, BioImageType.AVATAR),
+      this.prisma.bioImageRecord.create({
+        data: {
+          extension: avatarRecord.extension,
+          size: avatarRecord.size,
+          type: avatarRecord.type,
+          id: avatarRecord.id,
+          createdAt: avatarRecord.createdAt,
+          updatedAt: avatarRecord.updatedAt,
+          avatarUser: {
+            connect: {
+              id: userRecord.id,
+            },
           },
         },
-      },
-    });
+      }),
+    ]);
+    return createAvatar !== null;
   }
 
-  async udpateCover(user: UserEntity): Promise<void> {
+  async updateCover(user: UserEntity): Promise<boolean> {
     const userRecord = this.mapper.toPersistence(user);
     const coverRecord = userRecord.cover;
-
-    await this.prisma.bioImageRecord.create({
-      data: {
-        extension: coverRecord.extension,
-        size: coverRecord.size,
-        type: coverRecord.type,
-        id: coverRecord.id,
-        createdAt: coverRecord.createdAt,
-        updatedAt: coverRecord.updatedAt,
-        avatarUser: {
-          connect: {
-            id: userRecord.id,
+    console.log(userRecord);
+    const [deleteCover, createCover] = await this.prisma.$transaction([
+      this.deleteBioImage(user, BioImageType.COVER),
+      this.prisma.bioImageRecord.create({
+        data: {
+          extension: coverRecord.extension,
+          size: coverRecord.size,
+          type: coverRecord.type,
+          id: coverRecord.id,
+          createdAt: coverRecord.createdAt,
+          updatedAt: coverRecord.updatedAt,
+          coverUser: {
+            connect: {
+              id: userRecord.id,
+            },
           },
         },
-      },
-    });
+      }),
+    ]);
+    return createCover !== null;
   }
 
-  async deleteBioImage(user: UserEntity, type: BioImageType): Promise<void> {
+  deleteBioImage(user: UserEntity, type: BioImageType) {
     const userRecord = this.mapper.toPersistence(user);
-    await this.prisma.bioImageRecord.deleteMany({
+    return this.prisma.bioImageRecord.deleteMany({
       where: {
-        avatarUser: {
-          id: userRecord.id,
-        },
+        OR: [
+          {
+            avatarUser: {
+              id: userRecord.id,
+            },
+          },
+          {
+            coverUser: {
+              id: userRecord.id,
+            },
+          },
+        ],
         type: type,
       },
     });
   }
 
-  async updateUserInfor(user: UserEntity): Promise<void> {
+  async updateUserInfor(user: UserEntity): Promise<boolean> {
     const record = this.mapper.toPersistence(user);
-    await this.prisma.userRecord.update({
+    const updatedUser = await this.prisma.userRecord.update({
       where: { id: record.id },
       data: {
         firstName: record.firstName,
@@ -115,5 +132,6 @@ export class UserRepository
         },
       },
     });
+    return updatedUser !== null;
   }
 }

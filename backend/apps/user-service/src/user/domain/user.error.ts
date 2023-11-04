@@ -10,3 +10,13 @@ export class UserAlreadyExistsError extends Exception {
     super(UserAlreadyExistsError.message, HttpStatus.CONFLICT, cause, metadata);
   }
 }
+
+export class UserNotFoundError extends Exception {
+  static readonly message = 'UserEntity not found';
+
+  public readonly code = 'USER.NOT_FOUND';
+
+  constructor(cause?: Error, metadata?: unknown) {
+    super(UserNotFoundError.message, HttpStatus.NOT_FOUND, cause, metadata);
+  }
+}
