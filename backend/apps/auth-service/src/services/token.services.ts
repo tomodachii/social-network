@@ -1,19 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from "express";
 import { match, Either, right, left } from "fp-ts/lib/Either"
+import { TokenMaker, VerifyFunction, TokenDecoder, ReplyUnauthorized, ReplyToken, ReplyJwtPayload } from './token.type';
+import { passwordValidator, PasswordValidator } from './password.services';
+import { PrismaClient } from '@prisma/client/auth';
+
+const prisma = new PrismaClient();
+
 
 const privateKey = "abcd";
 
-type SignFunction = (payload: string | Buffer | object, secretOrPrivateKey: jwt.Secret) => string;
-type TokenMaker = (privateKey: string, signFunction: SignFunction) => (username: string) => string;
-const tokenMaker: TokenMaker = (privateKey, signFunction) => (username) => signFunction({ username: username }, privateKey);
+const tokenMaker: TokenMaker = (privateKey, signFunction) => (email) => signFunction({ email: email }, privateKey);
 
-type VerifyFunction = (
-  token: string,
-  secretOrPublicKey: jwt.Secret | jwt.GetPublicKeyOrSecret,
-  callback?: jwt.VerifyCallback<jwt.JwtPayload>,
-) => void;
-type TokenDecoder = (privateKey: string, verifyFunction: Function) => (token: string) => Either<Error, jwt.JwtPayload>;
 const tokenDecoder: TokenDecoder = (privateKey: string, verifyFunction: VerifyFunction) => (token: string) => {
   let result: Either<Error, jwt.JwtPayload>;
   verifyFunction(token, privateKey, (err, decoded: jwt.JwtPayload) => {
@@ -21,7 +19,7 @@ const tokenDecoder: TokenDecoder = (privateKey: string, verifyFunction: VerifyFu
       // console.error('JWT verification failed:', err);
       result = left(new Error('JWT verification failed: ' + err));
     } else {
-      // console.log(decoded.username);
+      // console.log(decoded.email);
       result = right(decoded);
     }
   });
@@ -29,13 +27,11 @@ const tokenDecoder: TokenDecoder = (privateKey: string, verifyFunction: VerifyFu
   return result;
 };
 
-const encoder = tokenMaker(privateKey, jwt.sign);
+export const encoder = tokenMaker(privateKey, jwt.sign);
 const decoder = tokenDecoder(privateKey, jwt.verify);
 
-type ReplyUnauthorized = (res: Response) => (error: Error) => void;
 const replyUnauthorized: ReplyUnauthorized = (res) => (error) => res.status(401).send("Authentication failed");
 
-type ReplyToken = (res: Response) => (token: string) => void;
 const replyToken: ReplyToken = (res) => (token) => res.json({
   meta: {},
   data: {
@@ -43,20 +39,20 @@ const replyToken: ReplyToken = (res) => (token) => res.json({
   },
 });
 
-type ReplyJwtPayload = (res: Response) => (payload: jwt.JwtPayload) => void;
 const replyJwtPayload: ReplyJwtPayload = (res) => (payload) => {
   res.set({
-    'X-Username': payload.username,
+    'X-Username': payload.email,
     'X-iat': payload.iat,
   });
   res.send();
 }
 
-const validateCredentials = (username: string, password: string): Either<Error, string> => {
-  // const isValid: boolean = authenticate(username, password)
+const validateCredentials = (email: string, password: string, hashedPassword: string, salt: string): Either<Error, string> => {
+  // const isValid: boolean = authenticate(email, password)
   // use monad!
-  const isValid: boolean = username === "username" && password === "password" ? true : false;
-  return isValid ? right(encoder(username)) : left(new Error("bad credentials"))
+  const isValid = passwordValidator(password, salt, hashedPassword);
+  // const isValid: boolean = email === "email" && password === "password" ? true : false;
+  return isValid ? right(encoder(email)) : left(new Error("bad credentials"))
 }
 
 const validateAuthorizationHeader = (authorizationHeader: string): Either<Error, jwt.JwtPayload> => {
@@ -75,9 +71,17 @@ const validateAuthorizationHeader = (authorizationHeader: string): Either<Error,
   return decoder(token);
 }
 
-export const handleEncode = (req: Request, res: Response): void => {
-  const { username, password } = req.body;
-  match(replyUnauthorized(res), replyToken(res))(validateCredentials(username, password));
+export const handleEncode = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+  // query db -> hashedPassword, salt
+  const user = await prisma.authRecord.findUnique({
+    where: {
+      email
+    }
+  });
+  const hashedPassword = user.password;
+  const salt = user.salt;
+  match(replyUnauthorized(res), replyToken(res))(validateCredentials(email, password, hashedPassword, salt));
 }
 
 export const handleDecode = (req: Request, res: Response): void => {

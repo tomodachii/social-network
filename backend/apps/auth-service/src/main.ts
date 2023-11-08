@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import encodeRouter from './routes/encode.route';
 import decodeRouter from './routes/decode.route';
+import createCredentialRouter from './routes/create-credential.route';
 
 const app = express();
 
@@ -11,13 +12,11 @@ app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// Mount the encode router
+// Mount the routers
 app.use('/encode', encodeRouter);
-
-// Mount the decode router
 app.use('/decode', decodeRouter);
+app.use('/create-credential', createCredentialRouter);
 
-// let privateKey = 'abdc';
 
 const port = process.env.PORT || 3001;
 const server = app.listen(port, () => {

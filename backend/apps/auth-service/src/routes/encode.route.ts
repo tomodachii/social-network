@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { handleEncode } from '../controllers/token.controller';
+import { handleEncode } from '../services/token.services';
 
 const router = Router();
 

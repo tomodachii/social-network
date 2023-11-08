@@ -18,7 +18,7 @@ export class HttpAuthServiceProxy implements AuthServiceProxyPort {
   ): Promise<BaseResponse<CreateCredentialResponse>> {
     const result: AxiosResponse<BaseResponse<CreateCredentialResponse>> =
       await firstValueFrom(
-        this.httpService.post('http://localhost:3002/credentials', credential)
+        this.httpService.post('http://localhost:3001/create-credential', credential)
       );
     return Promise.resolve(
       new BaseResponse<CreateCredentialResponse>(result.data.data)
