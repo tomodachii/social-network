@@ -1,3 +1,4 @@
+import { HttpAuthServiceProxy } from './../../../../libs/auth-service-proxy/src/lib/adapters/http-auth-service-proxy';
 import {
   AuthServiceProxyModule,
   MockAuthServiceProxy,

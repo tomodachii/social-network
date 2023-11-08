@@ -5,18 +5,23 @@ import {
 import { AuthServiceProxyPort } from '../auth-service-proxy.port';
 import { Injectable } from '@nestjs/common';
 import { BaseResponse } from '@lib/common/api';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
-export class MockAuthServiceProxy implements AuthServiceProxyPort {
-  createCredentials(
+export class HttpAuthServiceProxy implements AuthServiceProxyPort {
+  constructor(private httpService: HttpService) {}
+
+  async createCredentials(
     credential: CreateCredentialPayload
   ): Promise<BaseResponse<CreateCredentialResponse>> {
+    const result: AxiosResponse<BaseResponse<CreateCredentialResponse>> =
+      await firstValueFrom(
+        this.httpService.post('http://localhost:3002/credentials', credential)
+      );
     return Promise.resolve(
-      new BaseResponse<CreateCredentialResponse>({
-        token: 'token',
-        refreshToken: 'refreshToken',
-        expired: 1,
-      })
+      new BaseResponse<CreateCredentialResponse>(result.data.data)
     );
   }
 
