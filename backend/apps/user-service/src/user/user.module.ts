@@ -33,7 +33,7 @@ const mappers: Provider[] = [UserMapper];
 
 const repositories: Provider[] = [
   { provide: USER_REPOSITORY, useClass: UserRepository },
-  { provide: AUTH_SERVICE_PROXY, useClass: HttpAuthServiceProxy },
+  { provide: AUTH_SERVICE_PROXY, useClass: MockAuthServiceProxy },
 ];
 
 @Module({
