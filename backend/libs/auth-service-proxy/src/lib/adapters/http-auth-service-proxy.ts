@@ -4,6 +4,9 @@ import {
 } from '../interfaces';
 import { AuthServiceProxyPort } from '../auth-service-proxy.port';
 import { Injectable } from '@nestjs/common';
+/* The line `import { BaseResponse } from '@lib/common/api';` is importing the `BaseResponse` class
+from the `@lib/common/api` module. This class is likely used to wrap the response data returned from
+API calls and provide additional information such as status codes and error messages. */
 import { BaseResponse } from '@lib/common/api';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -18,7 +21,10 @@ export class HttpAuthServiceProxy implements AuthServiceProxyPort {
   ): Promise<BaseResponse<CreateCredentialResponse>> {
     const result: AxiosResponse<BaseResponse<CreateCredentialResponse>> =
       await firstValueFrom(
-        this.httpService.post('http://localhost:3002/credentials', credential)
+        this.httpService.post(
+          'http://localhost:3001/create-credential',
+          credential
+        )
       );
     return Promise.resolve(
       new BaseResponse<CreateCredentialResponse>(result.data.data)
