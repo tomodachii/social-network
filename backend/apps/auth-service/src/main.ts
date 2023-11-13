@@ -17,7 +17,6 @@ app.use('/encode', encodeRouter);
 app.use('/decode', decodeRouter);
 app.use('/create-credential', createCredentialRouter);
 
-
 const port = process.env.PORT || 3001;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);

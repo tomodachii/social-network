@@ -1,16 +1,5 @@
 version: '3'
 services:
-  user-db:
-    image: mysql:8.0.30
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-    ports:
-      - '3306:3306'
-    networks:
-      - socialnetwork_backend
-    volumes:
-      - ./data/user-db:/var/lib/mysql
   nginx:
     image: nginx:latest
     restart: always
@@ -27,6 +16,17 @@ services:
       - '${HOST_NAME}:${HOST_GATEWAY}'
     networks:
       - socialnetwork_backend
+  user-db:
+    image: mysql:8.0.30
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - '3306:3306'
+    networks:
+      - socialnetwork_backend
+    volumes:
+      - ./data/user-db:/var/lib/mysql
   auth-db:
     image: mysql:8.0.30
     restart: always

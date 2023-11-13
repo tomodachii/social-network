@@ -4,9 +4,6 @@ import {
 } from '../interfaces';
 import { AuthServiceProxyPort } from '../auth-service-proxy.port';
 import { Injectable } from '@nestjs/common';
-/* The line `import { BaseResponse } from '@lib/common/api';` is importing the `BaseResponse` class
-from the `@lib/common/api` module. This class is likely used to wrap the response data returned from
-API calls and provide additional information such as status codes and error messages. */
 import { BaseResponse } from '@lib/common/api';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';

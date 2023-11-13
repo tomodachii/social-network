@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\apps\\sample-service\\src\\main.ts",
+      "program": "${workspaceFolder}\\apps\\user-service\\src\\main.ts",
       "runtimeArgs": [
         "--nolazy",
         "-r",
@@ -19,10 +19,10 @@
       "sourceMaps": true,
       "envFile": "${workspaceFolder}/.env",
       "env": {},
-      "cwd": "${workspaceFolder}\\apps\\sample-service",
+      "cwd": "${workspaceFolder}\\apps\\user-service",
       "internalConsoleOptions": "openOnFirstSessionStart",
       "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "outFiles": ["${workspaceFolder}/dist/apps/sample-service/*.js"]
+      "outFiles": ["${workspaceFolder}/dist/apps/user-service/*.js"]
     }
   ]
 }
