@@ -38,7 +38,7 @@ export class UserController {
     @Body() body: CreateUserDto
   ): Promise<BaseResponse<CreateUserResponseDto>> {
     const command = new CreateUserCommand(body);
-
+    console.log(command);
     const result: Result<CreateUserResponseDto, UserAlreadyExistsError> =
       await this.commandBus.execute(command);
 
