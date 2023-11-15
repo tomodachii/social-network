@@ -7,5 +7,5 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
   findById(userId: string): Promise<Option<UserEntity>>;
   updateAvatar(user: UserEntity): Promise<boolean>;
   updateCover(user: UserEntity): Promise<boolean>;
-  updateUserInfor(user: UserEntity): Promise<boolean>;
+  updateUserProfile(user: UserEntity): Promise<boolean>;
 }
