@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { Gender } from './user.type';
 import { AddressProps, AddressVO } from './value-objects';
 import { ConfigEntity, BioImageEntity, CreateBioImageProps } from './entities';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 
 export interface UserProps {
   firstName: string;
