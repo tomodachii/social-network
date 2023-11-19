@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 import { ArgumentNotProvidedException } from '@lib/common/exceptions';
 import { Guard } from '@lib/common/utils';
 import { v4 } from 'uuid';

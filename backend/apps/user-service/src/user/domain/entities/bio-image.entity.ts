@@ -5,7 +5,7 @@ import {
 } from '@lib/common/exceptions';
 import { BioImageType } from '../user.type';
 import { validate as uuidValidate } from 'uuid';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png'];
 

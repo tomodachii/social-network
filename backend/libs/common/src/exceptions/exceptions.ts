@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 import {
   ARGUMENT_INVALID,
   ARGUMENT_NOT_PROVIDED,
