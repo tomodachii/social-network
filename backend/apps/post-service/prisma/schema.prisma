@@ -1,13 +1,102 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client/post"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./db.sql"
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/post_db"
 }
 
-model Todo {
-  id String @id @default(cuid())
-  @@map("todos")
+enum ReactType {
+  Love
+  Like
+  Haha
+  Wow
+  Sad
+  Angry
+  Care
+}
+
+enum AttachmentType {
+  Image
+  Video
+  Document
+}
+
+enum PostMode {
+  Privacy
+  Public
+  OnlyMe
+  Friends
+  FriendsOfFriends
+}
+
+model ReactRecord {
+  createdAt     DateTime      @default(now())
+  type          ReactType
+  userId        String
+  ownnerId      String
+  postRecord    PostRecord    @relation(name: "Post", map: "Post_react_fk", fields: [ownnerId], references: [id])
+  commentRecord CommentRecord @relation(name: "Comment", map: "Comment_react_fk", fields: [ownnerId], references: [id])
+
+  @@id([userId, ownnerId])
+  @@map("react")
+}
+
+// generate above comment and attachment record in prisma schema
+model AttachmentRecord {
+  id              String         @id @default(uuid())
+  createdAt       DateTime       @default(now())
+  name            String
+  description     String
+  size            Int
+  type            AttachmentType
+  ownerId         String
+  CommentRecord   CommentRecord? @relation(fields: [commentRecordId], references: [id])
+  commentRecordId String?        @default(uuid())
+
+  @@map("attachment")
+}
+
+model CommentRecord {
+  id             String             @id @default(uuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  content        String
+  userId         String
+  replyTo        String             @default(uuid())
+  attachments    AttachmentRecord[]
+  replyToComment CommentRecord      @relation(name: "CommentToComment", map: "Comment_comment_fk", fields: [replyTo], references: [id])
+  comments       CommentRecord[]    @relation("CommentToComment")
+  reacts         ReactRecord[]      @relation("Comment")
+  post           PostRecord?        @relation(name: "Comment", map: "Comment_post_fk", fields: [replyTo], references: [id])
+
+  @@map("comment")
+}
+
+model PostRecord {
+  id        String          @id @default(uuid())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  version   Int             @default(0)
+  content   String
+  mode      PostMode
+  userId    String
+  comments  CommentRecord[] @relation("Comment")
+  reacts    ReactRecord[]   @relation("Post")
+
+  @@map("post")
+}
+
+model UserRecord {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  version      Int      @default(0)
+  firstName    String
+  lastName     String
+  avatarFileId String?
+
+  @@map("user")
 }
