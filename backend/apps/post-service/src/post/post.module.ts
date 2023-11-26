@@ -1,7 +1,7 @@
 import { Module, Provider, Logger } from '@nestjs/common';
 import { PostMapper } from './post.mapper';
 import { CqrsModule } from '@nestjs/cqrs';
-import { DatabaseModule } from '../database/database.module';
+import { DatabaseModule } from '../database';
 
 const httpControllers = [];
 

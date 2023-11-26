@@ -1,7 +1,4 @@
-import {
-  PostPrersistent,
-  PrismaPostService,
-} from './../../../database/prisma.post.service';
+import { PostPrersistent, PrismaPostService } from './../../../database';
 import { BaseRepository } from '@lib/common/databases';
 import { Injectable, Logger } from '@nestjs/common';
 import { PostEntity, CommentEntity } from '../../domain';

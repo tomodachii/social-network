@@ -5,7 +5,8 @@ import { RequestContext } from 'nestjs-request-context';
  */
 
 export class AppRequestContext extends RequestContext {
-  requestId: string;
+  requestId!: string;
+  userId!: string;
 }
 
 export class RequestContextService {
@@ -19,11 +20,16 @@ export class RequestContextService {
     ctx.requestId = id;
   }
 
+  static setUserId(id: string): void {
+    const ctx = this.getContext();
+    ctx.userId = id;
+  }
+
   static getRequestId(): string {
     return this.getContext().requestId;
   }
 
-  static cleanTransactionConnection(): void {
-    const ctx = this.getContext();
+  static getUserId(): string {
+    return this.getContext().userId;
   }
 }
