@@ -1,0 +1,148 @@
+import { AggregateID, Mapper } from '@lib/ddd';
+import {
+  AttachmentEntity,
+  AttachmentType,
+  CommentEntity,
+  PostEntity,
+  PostMode,
+  ReactType,
+  ReactVO,
+} from './domain';
+import {
+  CommentPersistent,
+  PostPrersistent,
+  ReactRecord,
+  AttachmentRecord,
+  PostRecord,
+} from '../database/prisma.post.service';
+
+export class PostMapper implements Mapper<PostEntity, PostRecord> {
+  toResponse(entity: PostEntity) {
+    throw new Error('Method not implemented.');
+  }
+  toDomain(record: PostPrersistent): PostEntity {
+    return new PostEntity({
+      id: record.id,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      props: {
+        content: record.content,
+        mode: record.mode as PostMode,
+        userId: record.userId,
+        attachments: record.attachments.map(this.initAttachmentEntity),
+        comments: record.comments.map(this.initCommentEntity),
+        reacts: record.reacts.map(this.initReactVO),
+      },
+    });
+  }
+
+  private initReactVO(react: ReactRecord): ReactVO {
+    return new ReactVO({
+      createdAt: react.createdAt,
+      type: react.type as ReactType,
+      userId: react.userId,
+    });
+  }
+
+  private initAttachmentEntity(attachment: AttachmentRecord): AttachmentEntity {
+    return new AttachmentEntity({
+      id: attachment.id,
+      createdAt: attachment.createdAt,
+      updatedAt: attachment.createdAt,
+      props: {
+        type: attachment.type as AttachmentType,
+        name: attachment.name,
+        description: attachment.description,
+        size: attachment.size,
+      },
+    });
+  }
+
+  private initCommentEntity(comment: CommentPersistent): CommentEntity {
+    return new CommentEntity({
+      id: comment.id,
+      createdAt: comment.createdAt,
+      updatedAt: comment.createdAt,
+      props: {
+        content: comment.content,
+        userId: comment.userId,
+        attachments: comment.attachments.map(this.initAttachmentEntity),
+        replies: comment.replies.map(this.initCommentEntity),
+        reacts: comment.reacts.map(this.initReactVO),
+      },
+    });
+  }
+
+  toPersistence(domain: PostEntity): PostRecord {
+    const postCopy = domain.getPropsCopy();
+    const record = {
+      id: postCopy.id,
+      content: postCopy.content,
+      createdAt: postCopy.createdAt,
+      updatedAt: postCopy.updatedAt,
+      mode: postCopy.mode,
+      originalPostId: postCopy.originalPost?.id,
+      version: 0,
+      attachments: postCopy.attachments.map((attachment) =>
+        this.initAttachmentRecord(attachment, postCopy.id)
+      ),
+      comments: postCopy.comments.map((comment) =>
+        this.initCommentRecord(comment, postCopy.id)
+      ),
+      reacts: postCopy.reacts.map((react) =>
+        this.initReactRecord(react, postCopy.id)
+      ),
+      userId: postCopy.userId,
+    };
+    return record;
+  }
+
+  initAttachmentRecord(
+    attachment: AttachmentEntity,
+    ownnerId: AggregateID
+  ): AttachmentRecord {
+    const attachmentCopy = attachment.getPropsCopy();
+    return {
+      id: attachmentCopy.id,
+      createdAt: attachmentCopy.createdAt,
+      name: attachmentCopy.name,
+      description: attachmentCopy.description,
+      size: attachmentCopy.size,
+      type: attachmentCopy.type,
+      ownerId: ownnerId,
+    };
+  }
+
+  initReactRecord(react: ReactVO, ownnerId: AggregateID): ReactRecord {
+    return {
+      createdAt: react.createdAt,
+      type: react.type,
+      userId: react.userId,
+      ownerId: ownnerId,
+    };
+  }
+
+  initCommentRecord(
+    comment: CommentEntity,
+    ownnerId: AggregateID
+  ): CommentPersistent {
+    const commentCopy = comment.getPropsCopy();
+    return {
+      id: commentCopy.id,
+      createdAt: commentCopy.createdAt,
+      updatedAt: commentCopy.updatedAt,
+      content: commentCopy.content,
+      userId: commentCopy.userId,
+      replyTo: ownnerId,
+      attachments: commentCopy.attachments.map((attachment) =>
+        this.initAttachmentRecord(attachment, commentCopy.id)
+      ),
+      reacts: commentCopy.reacts.map((react) =>
+        this.initReactRecord(react, commentCopy.id)
+      ),
+      replies: commentCopy.replies.map((comment) =>
+        this.initCommentRecord(comment, commentCopy.id)
+      ),
+    };
+  }
+}

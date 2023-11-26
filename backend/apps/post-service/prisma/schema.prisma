@@ -1,13 +1,106 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client/post"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./db.sql"
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/post_db"
 }
 
-model Todo {
-  id String @id @default(cuid())
-  @@map("todos")
+enum ReactType {
+  Love
+  Like
+  Haha
+  Wow
+  Sad
+  Angry
+  Care
+}
+
+enum AttachmentType {
+  Image
+  Video
+  Document
+}
+
+enum PostMode {
+  Privacy
+  Public
+  OnlyMe
+  Friends
+  FriendsOfFriends
+}
+
+model ReactRecord {
+  createdAt     DateTime      @default(now())
+  type          ReactType
+  userId        String
+  ownerId       String
+  postRecord    PostRecord    @relation(name: "ReactPost", map: "ReactPost", fields: [ownerId], references: [id])
+  commentRecord CommentRecord @relation(name: "ReactComment", fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([userId, ownerId, type])
+  @@map("react")
+}
+
+model AttachmentRecord {
+  id            String         @id @default(uuid())
+  createdAt     DateTime       @default(now())
+  name          String
+  description   String
+  size          Int
+  type          AttachmentType
+  ownerId       String
+  CommentRecord CommentRecord? @relation(name: "AttachmentComment", map: "AttachmentComment", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  PostRecord    PostRecord?    @relation(name: "AttachmentPost", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("attachment")
+}
+
+model CommentRecord {
+  id             String             @id @default(uuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  content        String
+  userId         String
+  replyTo        String
+  attachments    AttachmentRecord[] @relation("AttachmentComment")
+  replyToComment CommentRecord      @relation(name: "ReplyComment", map: "ReplyComment", fields: [replyTo], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  replies        CommentRecord[]    @relation("ReplyComment")
+  reacts         ReactRecord[]      @relation("ReactComment")
+  post           PostRecord?        @relation(name: "CommentPost", fields: [replyTo], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@map("comment")
+}
+
+model PostRecord {
+  id             String             @id @default(uuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  version        Int                @default(0)
+  content        String
+  originalPost   PostRecord?        @relation(name: "SharePost", fields: [originalPostId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  originalPostId String?
+  sharePost      PostRecord[]       @relation(name: "SharePost")
+  mode           PostMode
+  userId         String
+  attachments    AttachmentRecord[] @relation("AttachmentPost")
+  comments       CommentRecord[]    @relation("CommentPost")
+  reacts         ReactRecord[]      @relation("ReactPost")
+
+  @@map("post")
+}
+
+model UserRecord {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  version      Int      @default(0)
+  firstName    String
+  lastName     String
+  avatarFileId String?
+
+  @@map("user")
 }

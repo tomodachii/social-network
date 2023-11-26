@@ -19,7 +19,7 @@ export interface PostProps {
   userId: AggregateID;
   attachments: AttachmentEntity[];
   mode: PostMode;
-  originalPost: AggregateID;
+  originalPost?: PostEntity;
 }
 
 export interface CreatePostProps {
@@ -27,7 +27,7 @@ export interface CreatePostProps {
   userId: AggregateID;
   attachments: AttachmentEntity[];
   mode: PostMode;
-  originalPost: AggregateID;
+  originalPost?: PostEntity;
 }
 
 export class PostEntity extends AggregateRoot<PostProps> {

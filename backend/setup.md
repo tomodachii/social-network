@@ -42,3 +42,9 @@ nx prisma-migrate user-service --name=
 nx serve user-service
 nx serve auth-service
 ```
+
+or run all service
+
+```
+nx run-many -t serve --exclude sample-service --parallel=4
+```

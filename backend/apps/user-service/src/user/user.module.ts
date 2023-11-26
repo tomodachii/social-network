@@ -1,7 +1,7 @@
-import { HttpAuthServiceProxy } from './../../../../libs/auth-service-proxy/src/lib/adapters/http-auth-service-proxy';
 import {
   AuthServiceProxyModule,
   MockAuthServiceProxy,
+  HttpAuthServiceProxy,
 } from '@lib/auth-service-proxy';
 import { Module, Provider, Logger } from '@nestjs/common';
 import { UserController } from './application/api';

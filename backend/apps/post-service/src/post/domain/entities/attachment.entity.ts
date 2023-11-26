@@ -7,6 +7,7 @@ import { v4 } from 'uuid';
 import { HttpStatus } from '@lib/common/api';
 import { AttachmentType } from '../post.type';
 import { validate as uuidValidate } from 'uuid';
+import { Err, Ok, Result } from 'oxide.ts';
 
 export interface AttachmentProps {
   name: string;
@@ -59,17 +60,21 @@ export class AttachmentEntity extends AggregateRoot<AttachmentProps> {
     this.props.size = size;
   }
 
-  public validate(): void {
+  public validate(): Result<void, Error> {
     if (uuidValidate(this._id) === false) {
-      throw new ArgumentInvalidException(
-        'file id must be uuid',
-        HttpStatus.BAD_REQUEST
+      return Err(
+        new ArgumentInvalidException(
+          'file id must be uuid',
+          HttpStatus.BAD_REQUEST
+        )
       );
     }
     if (this.props.size > 5012) {
-      throw new ArgumentOutOfRangeException(
-        'attachment size must not be greater than 5MB',
-        HttpStatus.BAD_REQUEST
+      return Err(
+        new ArgumentOutOfRangeException(
+          'attachment size must not be greater than 5MB',
+          HttpStatus.BAD_REQUEST
+        )
       );
     }
   }
