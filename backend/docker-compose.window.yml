@@ -38,6 +38,17 @@ services:
       - socialnetwork_backend
     volumes:
       - ./data/auth-db:/var/lib/mysql
+  post-db:
+    image: mysql:8.0.30
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - '33008:3306'
+    networks:
+      - socialnetwork_backend
+    volumes:
+      - ./data/post-db:/var/lib/mysql
   adminer:
     image: adminer
     restart: always

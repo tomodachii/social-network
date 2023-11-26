@@ -7,7 +7,7 @@ export class PostCreatedEvent extends DomainEvent {
   readonly userId: AggregateID;
   readonly attachments: AttachmentEntity[];
   readonly mode: PostMode;
-  readonly originalPost: AggregateID;
+  readonly originalPostId: AggregateID;
 
   constructor(props: DomainEventProps<PostCreatedEvent>) {
     super(props);
@@ -15,6 +15,6 @@ export class PostCreatedEvent extends DomainEvent {
     this.userId = props.userId;
     this.attachments = props.attachments;
     this.mode = props.mode;
-    this.originalPost = props.originalPost;
+    this.originalPostId = props.originalPostId;
   }
 }

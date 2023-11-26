@@ -9,16 +9,15 @@ import { AttachmentEntity } from './attachment.entity';
 export interface CommentProps {
   content: string;
   reacts: ReactVO[];
+  replies: CommentEntity[];
   userId: AggregateID;
   attachments: AttachmentEntity[];
-  replyTo?: AggregateID;
 }
 
 export interface CreateCommentProps {
   content: string;
   userId: AggregateID;
   attachments: AttachmentEntity[];
-  replyTo?: AggregateID;
 }
 
 export class CommentEntity extends AggregateRoot<CommentProps> {
@@ -29,6 +28,7 @@ export class CommentEntity extends AggregateRoot<CommentProps> {
     const props: CommentProps = {
       ...create,
       reacts: [],
+      replies: [],
     };
     return new CommentEntity({ id, props });
   }
@@ -49,8 +49,8 @@ export class CommentEntity extends AggregateRoot<CommentProps> {
     return this.props.attachments;
   }
 
-  get replyTo(): AggregateID {
-    return this.props.replyTo;
+  get replies(): CommentEntity[] {
+    return this.props.replies;
   }
 
   set content(content: string) {
