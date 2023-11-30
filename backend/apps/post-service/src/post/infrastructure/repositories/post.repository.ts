@@ -100,7 +100,6 @@ export class PostRepository
             create: {
               content: comment.content,
               userId: comment.userId,
-              
             },
             update: {
               content: comment.content,
@@ -129,7 +128,6 @@ export class PostRepository
     });
     return !!result;
   }
-
   findCommentById(id: string): Promise<CommentEntity> {
     throw new Error('Method not implemented.');
   }
