@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:123456@localhost:3306/post_db"
+  url      = "mysql://root:123456@localhost:3308/post_db"
 }
 
 enum ReactType {
@@ -33,27 +33,30 @@ enum PostMode {
 }
 
 model ReactRecord {
-  createdAt     DateTime      @default(now())
-  type          ReactType
-  userId        String
-  ownerId       String
-  postRecord    PostRecord    @relation(name: "ReactPost", map: "ReactPost", fields: [ownerId], references: [id])
-  commentRecord CommentRecord @relation(name: "ReactComment", fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  type      ReactType
+  userId    String
+  user      UserRecord    @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+  postId    String
+  post      PostRecord    @relation(name: "ReactPost", map: "ReactPost", fields: [postId], references: [id])
+  commentId String
+  comment   CommentRecord @relation(name: "ReactComment", fields: [commentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
-  @@unique([userId, ownerId, type])
+  @@unique([userId, postId, commentId, type])
   @@map("react")
 }
 
 model AttachmentRecord {
-  id            String         @id @default(uuid())
-  createdAt     DateTime       @default(now())
-  name          String
-  description   String
-  size          Int
-  type          AttachmentType
-  ownerId       String
-  CommentRecord CommentRecord? @relation(name: "AttachmentComment", map: "AttachmentComment", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  PostRecord    PostRecord?    @relation(name: "AttachmentPost", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id          String         @id @default(uuid())
+  createdAt   DateTime       @default(now())
+  name        String
+  description String
+  size        Int
+  type        AttachmentType
+  commentId   String?
+  comment     CommentRecord? @relation(name: "AttachmentComment", map: "AttachmentComment", fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId      String?
+  post        PostRecord?    @relation(name: "AttachmentPost", fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("attachment")
 }
@@ -64,12 +67,14 @@ model CommentRecord {
   updatedAt      DateTime           @updatedAt
   content        String
   userId         String
-  replyTo        String
+  user           UserRecord         @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+  replyCommentId String?
   attachments    AttachmentRecord[] @relation("AttachmentComment")
-  replyToComment CommentRecord      @relation(name: "ReplyComment", map: "ReplyComment", fields: [replyTo], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  replyToComment CommentRecord?     @relation(name: "ReplyComment", map: "ReplyComment", fields: [replyCommentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   replies        CommentRecord[]    @relation("ReplyComment")
   reacts         ReactRecord[]      @relation("ReactComment")
-  post           PostRecord?        @relation(name: "CommentPost", fields: [replyTo], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  postId         String?
+  post           PostRecord?        @relation(name: "CommentPost", fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
   @@map("comment")
 }
@@ -85,6 +90,7 @@ model PostRecord {
   sharePost      PostRecord[]       @relation(name: "SharePost")
   mode           PostMode
   userId         String
+  user           UserRecord         @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
   attachments    AttachmentRecord[] @relation("AttachmentPost")
   comments       CommentRecord[]    @relation("CommentPost")
   reacts         ReactRecord[]      @relation("ReactPost")
@@ -93,14 +99,16 @@ model PostRecord {
 }
 
 model UserRecord {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  version      Int      @default(0)
+  userId       String          @id @default(uuid())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  version      Int             @default(0)
   firstName    String
   lastName     String
   avatarFileId String?
+  reacts       ReactRecord[]
+  comments     CommentRecord[]
+  posts        PostRecord[]
 
   @@map("user")
 }

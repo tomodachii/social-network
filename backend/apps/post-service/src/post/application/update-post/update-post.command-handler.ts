@@ -13,24 +13,25 @@ export class UpdatePostCommandHandler
 {
   constructor(
     @Inject(POST_REPOSITORY)
-    protected readonly userRepo: PostRepositoryPort
+    protected readonly repo: PostRepositoryPort
   ) {}
 
   async execute(command: UpdatePostDto): Promise<string> {
-    const attachments = command.attachments.map((attachment) =>
-      AttachmentEntity.create({
-        ...attachment,
-      })
-    );
+    const attachments = command.attachments;
 
-    const post = PostEntity.create({
-      content: command.content,
-      mode: command.mode,
-      attachments: attachments,
-      userId: RequestContextService.getUserId(),
-    });
+    const post = await this.repo.findPostById(command.id);
+    for (let i = 0; i < attachments.length; i++) {
+      const attachment = attachments[i];
+      post.addAttachment({
+        description: attachment.description,
+        type: attachment.type,
+        id: attachment.id,
+        name: attachment.name,
+        size: attachment.size,
+      });
+    }
 
-    const result = await this.userRepo.savePost(post);
+    const result = await this.repo.savePost(post);
 
     if (!result) {
       throw new Exception('Cannot update post', HttpStatus.BAD_REQUEST);

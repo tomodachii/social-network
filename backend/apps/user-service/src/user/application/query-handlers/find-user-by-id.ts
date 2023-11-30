@@ -1,7 +1,7 @@
 import { QueryBase } from '@lib/ddd';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { PrismaUserService, UserRecord } from 'apps/user-service/src/database';
 import { Ok, Result } from 'oxide.ts';
-import { PrismaUserService, UserRecord } from '../../infrastructure';
 
 export class FindUserByIdQuery extends QueryBase {
   readonly userId: string;

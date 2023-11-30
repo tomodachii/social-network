@@ -18,13 +18,16 @@ export class ContextInterceptor implements NestInterceptor {
      * This ID can be used as correlation id shown in logs
      */
     const requestId = request?.body?.requestId ?? nanoid(6);
+    const userId = request?.user?.id ?? null;
 
     RequestContextService.setRequestId(requestId);
+    RequestContextService.setUserId(userId);
+    // console.log(request?.header('x-username'));
 
     return next.handle().pipe(
       tap(() => {
         // Perform cleaning if needed
-      }),
+      })
     );
   }
 }

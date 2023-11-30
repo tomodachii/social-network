@@ -2,7 +2,7 @@ import { Body, Controller, Param, Put } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdatePostDto } from './update-post.dto';
 
-@Controller('post')
+@Controller('posts')
 export class UpdateUserController {
   constructor(private readonly commandBus: CommandBus) {}
 

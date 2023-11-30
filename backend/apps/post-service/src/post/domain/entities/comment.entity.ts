@@ -1,4 +1,4 @@
-import { AggregateID, AggregateRoot } from '@lib/ddd';
+import { AggregateID, Entity } from '@lib/ddd';
 import { Guard } from '@lib/common/utils';
 import { ArgumentNotProvidedException } from '@lib/common/exceptions';
 import { v4 } from 'uuid';
@@ -20,7 +20,7 @@ export interface CreateCommentProps {
   attachments: AttachmentEntity[];
 }
 
-export class CommentEntity extends AggregateRoot<CommentProps> {
+export class CommentEntity extends Entity<CommentProps> {
   protected _id: string;
 
   static create(create: CreateCommentProps): CommentEntity {

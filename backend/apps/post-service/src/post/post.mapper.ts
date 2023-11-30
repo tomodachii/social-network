@@ -14,7 +14,8 @@ import {
   ReactRecord,
   AttachmentRecord,
   PostRecord,
-} from '../database/prisma.post.service';
+  CommentRecord,
+} from '../database';
 
 export class PostMapper implements Mapper<PostEntity, PostRecord> {
   toResponse(entity: PostEntity) {
@@ -97,10 +98,10 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
     return record;
   }
 
-  initAttachmentRecord(
+  private initAttachmentRecord(
     attachment: AttachmentEntity,
     ownnerId: AggregateID
-  ): AttachmentRecord {
+  ): Partial<AttachmentRecord> {
     const attachmentCopy = attachment.getPropsCopy();
     return {
       id: attachmentCopy.id,
@@ -109,25 +110,26 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
       description: attachmentCopy.description,
       size: attachmentCopy.size,
       type: attachmentCopy.type,
-      ownerId: ownnerId,
     };
   }
 
-  initReactRecord(react: ReactVO, ownnerId: AggregateID): ReactRecord {
+  private initReactRecord(
+    react: ReactVO,
+    ownnerId: AggregateID
+  ): Partial<ReactRecord> {
     return {
       createdAt: react.createdAt,
       type: react.type,
       userId: react.userId,
-      ownerId: ownnerId,
     };
   }
 
-  initCommentRecord(
+  private initCommentRecord(
     comment: CommentEntity,
     ownnerId: AggregateID
-  ): CommentPersistent {
+  ): Partial<CommentRecord> {
     const commentCopy = comment.getPropsCopy();
-    return {
+    const record = {
       id: commentCopy.id,
       createdAt: commentCopy.createdAt,
       updatedAt: commentCopy.updatedAt,
@@ -144,5 +146,6 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
         this.initCommentRecord(comment, commentCopy.id)
       ),
     };
+    return record;
   }
 }

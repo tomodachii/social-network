@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client/auth';
 import { encoder } from '../services/token.services';
 import { hash, generateSalt16 } from '../services/password.services';
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
-})
+});
 const router = Router();
 
 router.post('/', async (req: Request, res: Response): Promise<void> => {
@@ -22,21 +22,21 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       phoneNumber,
       salt: salt,
     },
-  })
+  });
   res.json({
     meta: {
-      message: "Success",
-      serviceId: "auth-service",
+      message: 'Success',
+      serviceId: 'auth-service',
       status: 200,
       isSuccess: true,
-      extraMeta: {}
+      extraMeta: {},
     },
     data: {
-        id: id,
-        token: encoder(email),
-        refreshToken: encoder(email),
-        expired: 123,
-    }
+      id: id,
+      token: encoder(email),
+      refreshToken: encoder(email),
+      expired: 123,
+    },
   });
 });
 
