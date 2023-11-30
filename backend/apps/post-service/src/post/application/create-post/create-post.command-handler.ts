@@ -13,7 +13,7 @@ export class CreatePostCommandHandler
 {
   constructor(
     @Inject(POST_REPOSITORY)
-    protected readonly userRepo: PostRepositoryPort
+    protected readonly repo: PostRepositoryPort
   ) {}
 
   async execute(command: CreatePostDto): Promise<string> {
@@ -30,7 +30,7 @@ export class CreatePostCommandHandler
       userId: RequestContextService.getUserId(),
     });
 
-    const result = await this.userRepo.createPost(post);
+    const result = await this.repo.createPost(post);
 
     if (!result) {
       throw new Exception('Cannot create post', HttpStatus.BAD_REQUEST);

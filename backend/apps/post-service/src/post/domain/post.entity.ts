@@ -130,7 +130,7 @@ export class PostEntity extends AggregateRoot<PostProps> {
   }
 
   public validate(): void {
-    if (Guard.isEmpty(this.props.userId) === false) {
+    if (Guard.isEmpty(this.props.userId)) {
       throw new ArgumentNotProvidedException(
         'Post must belong to one user',
         HttpStatus.BAD_REQUEST

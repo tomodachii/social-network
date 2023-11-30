@@ -1,4 +1,4 @@
-import { AggregateID, AggregateRoot } from '@lib/ddd';
+import { AggregateID, Entity } from '@lib/ddd';
 import {
   ArgumentInvalidException,
   ArgumentOutOfRangeException,
@@ -24,7 +24,7 @@ export interface CreateAttachmentProps {
   type: AttachmentType;
 }
 
-export class AttachmentEntity extends AggregateRoot<AttachmentProps> {
+export class AttachmentEntity extends Entity<AttachmentProps> {
   protected _id: AggregateID;
 
   static create(create: CreateAttachmentProps): AttachmentEntity {
@@ -45,6 +45,10 @@ export class AttachmentEntity extends AggregateRoot<AttachmentProps> {
 
   get size(): number {
     return this.props.size;
+  }
+
+  get type(): AttachmentType {
+    return this.props.type;
   }
 
   set name(name: string) {

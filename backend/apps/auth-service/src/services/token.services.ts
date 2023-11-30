@@ -56,6 +56,7 @@ const replyToken: ReplyToken = (res) => (token) =>
   });
 
 const replyJwtPayload: ReplyJwtPayload = (res) => (payload) => {
+  console.log(payload);
   res.set({
     'X-Username': payload.email,
     'X-iat': payload.iat,
