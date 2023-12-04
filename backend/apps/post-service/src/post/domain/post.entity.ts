@@ -101,6 +101,17 @@ export class PostEntity extends AggregateRoot<PostProps> {
     }
   }
 
+  getComment(commentId: AggregateID): CommentEntity {
+    const comment = this.props.comments.find((c) => c.id === commentId);
+    if (!comment) {
+      throw new ArgumentNotProvidedException(
+        'Comment does not exist',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return comment;
+  }
+
   removeComment(commentId: AggregateID): void {
     const commentIndex = this.props.comments.findIndex(
       (c) => c.id === commentId
