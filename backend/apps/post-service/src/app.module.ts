@@ -14,10 +14,10 @@ const interceptors = [
     provide: APP_INTERCEPTOR,
     useClass: ContextInterceptor,
   },
-  {
-    provide: APP_INTERCEPTOR,
-    useClass: ExceptionInterceptor,
-  },
+  // {
+  //   provide: APP_INTERCEPTOR,
+  //   useClass: ExceptionInterceptor,
+  // },
 ];
 
 @Module({

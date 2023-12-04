@@ -4,7 +4,7 @@ import { ArgumentNotProvidedException } from '@lib/common/exceptions';
 import { v4 } from 'uuid';
 import { HttpStatus } from '@lib/common/api';
 import { ReactVO } from '../value-objects/react.vo';
-import { AttachmentEntity } from './attachment.entity';
+import { AttachmentEntity, CreateAttachmentProps } from './attachment.entity';
 
 export interface CommentProps {
   content: string;
@@ -76,6 +76,32 @@ export class CommentEntity extends Entity<CommentProps> {
       );
     }
     this.props.reacts.splice(reactIndex, 1);
+  }
+
+  addAttachment(createAttachment: CreateAttachmentProps): void {
+    const attachment = AttachmentEntity.create({
+      description: createAttachment.description,
+      name: createAttachment.name,
+      size: createAttachment.size,
+      type: createAttachment.type,
+      id: createAttachment.id,
+    });
+    if (!this.props.attachments.find((a) => a.id === attachment.id)) {
+      this.props.attachments.push(attachment);
+    }
+  }
+
+  removeAttachment(attachmentId: AggregateID): void {
+    const attachmentIndex = this.props.attachments.findIndex(
+      (a) => a.id === attachmentId
+    );
+    if (attachmentIndex === -1) {
+      throw new ArgumentNotProvidedException(
+        'Attachment does not exist',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    this.props.attachments.splice(attachmentIndex, 1);
   }
 
   public validate(): void {

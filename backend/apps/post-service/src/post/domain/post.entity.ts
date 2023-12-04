@@ -56,7 +56,11 @@ export class PostEntity extends AggregateRoot<PostProps> {
   }
 
   get attachments(): AttachmentEntity[] {
-    return this.props.attachments;
+    return this.getPropsCopy().attachments;
+  }
+
+  get comments(): CommentEntity[] {
+    return this.getPropsCopy().comments;
   }
 
   get mode(): PostMode {
@@ -71,9 +75,30 @@ export class PostEntity extends AggregateRoot<PostProps> {
     this.props.mode = mode;
   }
 
-  addComment(createCommentProp: CreateCommentProps): void {
+  addComment(createCommentProp: CreateCommentProps): string {
     const comment = CommentEntity.create(createCommentProp);
     this.props.comments.push(comment);
+    return comment.id;
+  }
+
+  updateComment(
+    commentId: AggregateID,
+    updateCommentProp: Partial<CreateCommentProps>
+  ): void {
+    const comment = this.props.comments.find((c) => c.id === commentId);
+    if (!comment) {
+      throw new ArgumentNotProvidedException(
+        'Comment does not exist',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    comment.content = updateCommentProp.content || comment.content;
+    for (const attachment of comment.attachments) {
+      comment.removeAttachment(attachment.id);
+    }
+    for (const attachment of updateCommentProp.attachments) {
+      comment.addAttachment(attachment);
+    }
   }
 
   removeComment(commentId: AggregateID): void {
@@ -91,7 +116,9 @@ export class PostEntity extends AggregateRoot<PostProps> {
 
   addAttachment(createAttachment: CreateAttachmentProps): void {
     const attachment = AttachmentEntity.create(createAttachment);
-    this.props.attachments.push(attachment);
+    if (!this.props.attachments.find((a) => a.id === attachment.id)) {
+      this.props.attachments.push(attachment);
+    }
   }
 
   removeAttachment(attachmentId: AggregateID): void {

@@ -22,7 +22,7 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
     throw new Error('Method not implemented.');
   }
   toDomain(record: PostPrersistent): PostEntity {
-    return new PostEntity({
+    const result = new PostEntity({
       id: record.id,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
@@ -30,14 +30,16 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
         content: record.content,
         mode: record.mode as PostMode,
         userId: record.userId,
-        attachments: record.attachments.map(this.initAttachmentEntity),
-        comments: record.comments.map(this.initCommentEntity),
-        reacts: record.reacts.map(this.initReactVO),
+        attachments:
+          record.attachments?.map(PostMapper.initAttachmentEntity) ?? [],
+        comments: record.comments?.map(PostMapper.initCommentEntity) ?? [],
+        reacts: [],
       },
     });
+    return result;
   }
 
-  private initReactVO(react: ReactRecord): ReactVO {
+  private static initReactVO(react: ReactRecord): ReactVO {
     return new ReactVO({
       createdAt: react.createdAt,
       type: react.type as ReactType,
@@ -45,7 +47,9 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
     });
   }
 
-  private initAttachmentEntity(attachment: AttachmentRecord): AttachmentEntity {
+  private static initAttachmentEntity(
+    attachment: AttachmentRecord
+  ): AttachmentEntity {
     return new AttachmentEntity({
       id: attachment.id,
       createdAt: attachment.createdAt,
@@ -59,19 +63,21 @@ export class PostMapper implements Mapper<PostEntity, PostRecord> {
     });
   }
 
-  private initCommentEntity(comment: CommentPersistent): CommentEntity {
-    return new CommentEntity({
+  private static initCommentEntity(comment: CommentPersistent): CommentEntity {
+    const result = new CommentEntity({
       id: comment.id,
       createdAt: comment.createdAt,
       updatedAt: comment.createdAt,
       props: {
         content: comment.content,
         userId: comment.userId,
-        attachments: comment.attachments.map(this.initAttachmentEntity),
-        replies: comment.replies.map(this.initCommentEntity),
-        reacts: comment.reacts.map(this.initReactVO),
+        attachments:
+          comment.attachments?.map(PostMapper.initAttachmentEntity) ?? [],
+        replies: comment.replies?.map(PostMapper.initCommentEntity) ?? [],
+        reacts: [],
       },
     });
+    return result;
   }
 
   toPersistence(domain: PostEntity): PostRecord {
