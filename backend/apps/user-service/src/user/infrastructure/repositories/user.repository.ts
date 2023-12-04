@@ -115,7 +115,7 @@ export class UserRepository
     });
   }
 
-  async updateUserInfor(user: UserEntity): Promise<boolean> {
+  async updateUserProfile(user: UserEntity): Promise<boolean> {
     const record = this.mapper.toPersistence(user);
     const updatedUser = await this.prisma.userRecord.update({
       where: { id: record.id },

@@ -1,8 +1,8 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 import { ApiProperty } from '@nestjs/swagger';
 
 interface ResponseMetaData {
-  message: string;
+  message: string | string[];
   isSuccess: boolean;
   status: HttpStatus;
   serviceId: string;

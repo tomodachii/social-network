@@ -1,5 +1,5 @@
 import { Exception } from '@lib/common/exceptions';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 
 export class UserAlreadyExistsError extends Exception {
   static readonly message = 'UserEntity already exists';

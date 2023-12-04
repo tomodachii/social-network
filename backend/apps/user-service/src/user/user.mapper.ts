@@ -7,8 +7,8 @@ import {
   Gender,
   UserEntity,
 } from './domain';
-import { UserPrersistent, UserRecord } from './infrastructure';
 import { UserResponseDto } from './application';
+import { UserPrersistent, UserRecord } from '../database';
 
 export class UserMapper
   implements Mapper<UserEntity, UserRecord, UserResponseDto>

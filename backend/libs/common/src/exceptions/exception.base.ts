@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 import { RequestContextService } from '../application';
 
 export interface SerializedException {

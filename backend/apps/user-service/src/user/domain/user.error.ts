@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@lib/common/api';
 import { Exception } from '@lib/common/exceptions';
 
 export class UserAlreadyExistsError extends Exception {
