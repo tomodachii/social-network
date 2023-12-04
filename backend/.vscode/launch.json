@@ -21,8 +21,13 @@
       "env": {},
       "cwd": "${workspaceFolder}\\apps\\post-service",
       "internalConsoleOptions": "openOnFirstSessionStart",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "outFiles": ["${workspaceFolder}/dist/apps/post-service/*.js"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/apps/post-service/*.js"
+      ]
     }
   ]
 }
