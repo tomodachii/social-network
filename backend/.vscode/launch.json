@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/apps/user-service/src/main.ts",
+      "program": "${workspaceFolder}\\apps\\post-service\\src\\main.ts",
       "runtimeArgs": [
         "--nolazy",
         "-r",
@@ -19,10 +19,15 @@
       "sourceMaps": true,
       "envFile": "${workspaceFolder}/.env",
       "env": {},
-      "cwd": "${workspaceFolder}/apps/user-service",
+      "cwd": "${workspaceFolder}\\apps\\post-service",
       "internalConsoleOptions": "openOnFirstSessionStart",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "outFiles": ["${workspaceFolder}/dist/apps/user-service/*.js"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/apps/post-service/*.js"
+      ]
     }
   ]
 }

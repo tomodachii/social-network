@@ -71,7 +71,6 @@ export class UserController {
   async updateAvatar(
     @Param('userId') userId: string,
     @Body() body: UpdateBioImageDto,
-    @Req() request: Request
   ): Promise<BaseResponse<boolean>> {
     const command = new UpdateAvatarCommand({
       ...body,
