@@ -10,14 +10,14 @@ import {
   ReplyJwtPayload,
 } from './token.type';
 import { passwordValidator, PasswordValidator } from './password.services';
-import { PrismaClient } from '@prisma/client/auth';
+import { PrismaClient, AuthRecord } from '@prisma/client/auth';
 
 const prisma = new PrismaClient();
 
 const privateKey = 'abcd';
 
-const tokenMaker: TokenMaker = (privateKey, signFunction) => (email) =>
-  signFunction({ email: email }, privateKey);
+const tokenMaker: TokenMaker = (privateKey, signFunction) => (userId) =>
+  signFunction({ userId: userId }, privateKey);
 
 const tokenDecoder: TokenDecoder =
   (privateKey: string, verifyFunction: VerifyFunction) => (token: string) => {
@@ -56,25 +56,24 @@ const replyToken: ReplyToken = (res) => (token) =>
   });
 
 const replyJwtPayload: ReplyJwtPayload = (res) => (payload) => {
-  console.log(payload);
   res.set({
-    'X-Username': payload.email,
+    'X-UserId': payload.userId,
     'X-iat': payload.iat,
   });
   res.send();
 };
 
 const validateCredentials = (
-  email: string,
+  user: AuthRecord,
   password: string,
-  hashedPassword: string,
-  salt: string
 ): Either<Error, string> => {
   // const isValid: boolean = authenticate(email, password)
   // use monad!
+  const hashedPassword = user.password;
+  const salt = user.salt;
   const isValid = passwordValidator(password, salt, hashedPassword);
   // const isValid: boolean = email === "email" && password === "password" ? true : false;
-  return isValid ? right(encoder(email)) : left(new Error('bad credentials'));
+  return isValid ? right(encoder(user.id)) : left(new Error('bad credentials'));
 };
 
 const validateAuthorizationHeader = (
@@ -91,7 +90,6 @@ const validateAuthorizationHeader = (
   }
 
   const token = authorizationHeader.split(' ')[1]; // Extract the token part from the Authorization header
-  console.log('pass validate');
   return decoder(token);
 };
 
@@ -106,17 +104,14 @@ export const handleEncode = async (
       email,
     },
   });
-  const hashedPassword = user.password;
-  const salt = user.salt;
   match(
     replyUnauthorized(res),
     replyToken(res)
-  )(validateCredentials(email, password, hashedPassword, salt));
+  )(validateCredentials(user, password));
 };
 
 export const handleDecode = (req: Request, res: Response): void => {
   try {
-    console.log('hello');
     const authorizationHeader = req.header('Authorization');
 
     match(

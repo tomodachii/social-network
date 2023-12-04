@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Get,
+  Req,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation } from '@nestjs/swagger';
@@ -68,7 +69,7 @@ export class UserController {
   @Put(':userId/avatar')
   async updateAvatar(
     @Param('userId') userId: string,
-    @Body() body: UpdateBioImageDto
+    @Body() body: UpdateBioImageDto,
   ): Promise<BaseResponse<boolean>> {
     const command = new UpdateAvatarCommand({
       ...body,
