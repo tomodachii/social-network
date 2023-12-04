@@ -1,6 +1,8 @@
 import { Controller, Delete, Param } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { DeletePostDto } from './delete-post.command-handler';
+import { DeletePostCommand } from './delete-post.command-handler';
+import { Result, match } from 'oxide.ts';
+import { BaseResponse } from '@lib/common/api';
 
 @Controller('posts')
 export class DeletePostController {
@@ -8,11 +10,15 @@ export class DeletePostController {
 
   @Delete(':id')
   async create(@Param('id') id: string) {
-    console.log(id);
-    const deletePostDto: DeletePostDto = {
-      id,
-    };
-    const result: string = await this.commandBus.execute(deletePostDto);
-    return result;
+    const deletePostDto = new DeletePostCommand(id);
+    const result: Result<boolean, Error> = await this.commandBus.execute(
+      deletePostDto
+    );
+    return match(result, {
+      Ok: (response: boolean) => new BaseResponse<boolean>(response),
+      Err: (error: Error) => {
+        throw error;
+      },
+    });
   }
 }

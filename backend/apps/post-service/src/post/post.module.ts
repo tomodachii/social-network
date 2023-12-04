@@ -3,20 +3,29 @@ import { PostMapper } from './post.mapper';
 import { CqrsModule } from '@nestjs/cqrs';
 import { DatabaseModule } from '../database';
 import {
+  AddCommentCommandHandler,
+  AddCommentController,
   CreatePostCommandHandler,
-  CreateUserController,
+  CreatePostController,
   DeletePostCommandHandler,
   DeletePostController,
+  UpdateCommentCommandHandler,
+  UpdateCommentController,
   UpdatePostCommandHandler,
-  UpdateUserController,
+  UpdatePostController,
+  ViewPostController,
+  ViewPostQueryHandler,
 } from './application';
 import { PostRepository } from './infrastructure';
 import { POST_REPOSITORY } from './post.di-token';
 
 const httpControllers = [
-  CreateUserController,
-  UpdateUserController,
+  CreatePostController,
+  UpdatePostController,
   DeletePostController,
+  ViewPostController,
+  AddCommentController,
+  UpdateCommentController,
 ];
 
 // const messageControllers = [UserMessageController];
@@ -25,9 +34,11 @@ const commandHandlers: Provider[] = [
   CreatePostCommandHandler,
   UpdatePostCommandHandler,
   DeletePostCommandHandler,
+  AddCommentCommandHandler,
+  UpdateCommentCommandHandler,
 ];
 
-const queryHandlers: Provider[] = [];
+const queryHandlers: Provider[] = [ViewPostQueryHandler];
 
 const mappers: Provider[] = [PostMapper];
 

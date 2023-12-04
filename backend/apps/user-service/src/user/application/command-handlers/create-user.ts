@@ -59,7 +59,10 @@ export class CreateUserCommandHandler
     });
 
     if (!credential.meta.isSuccess) {
-      throw new Exception(credential.meta.message, credential.meta.status);
+      throw new Exception(
+        credential.meta.message.toString(),
+        credential.meta.status
+      );
     }
 
     try {

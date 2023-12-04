@@ -23,7 +23,9 @@ export class ExceptionInterceptor implements NestInterceptor {
         // Logging for debugging purposes
         if (err.status >= 400 && err.status < 500) {
           this.logger.debug(
-            `[${RequestContextService.getRequestId()}] ${err.message}`
+            `[${RequestContextService.getRequestId()}] ${err.message}: ${
+              err.stack
+            }`
           );
 
           const isClassValidatorError =

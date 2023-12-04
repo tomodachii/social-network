@@ -1,5 +1,6 @@
 import {
   AttachmentRecord,
+  CommentPersistent,
   CommentRecord,
   PostPrersistent,
   PostRecord,
@@ -7,10 +8,11 @@ import {
 } from './../../../database';
 import { BaseRepository } from '@lib/common/databases';
 import { Injectable, Logger } from '@nestjs/common';
-import { PostEntity, CommentEntity } from '../../domain';
+import { PostEntity, CommentEntity, AttachmentEntity } from '../../domain';
 import { PostRepositoryPort } from '../../domain';
 import { EventBus } from '@nestjs/cqrs';
 import { PostMapper } from '../../post.mapper';
+import { Ok, Option, Result } from 'oxide.ts';
 
 @Injectable()
 export class PostRepository
@@ -26,14 +28,14 @@ export class PostRepository
     super(mapper, eventBus, logger);
   }
 
-  async findPostById(id: string): Promise<PostEntity> {
+  async findPostById(id: string): Promise<Option<PostEntity>> {
     const postRecord = (await this.prisma.postRecord.findUnique({
       where: { id: id },
       include: {
         comments: {
           include: {
             reacts: true,
-            // attachments: true,
+            attachments: true,
             replies: true,
           },
         },
@@ -41,7 +43,9 @@ export class PostRepository
         attachments: true,
       },
     })) as PostPrersistent;
-    return this.mapper.toDomain(postRecord);
+    // return Option.safe(() => this.mapper.toDomain(postRecord));
+    const result = this.mapper.toDomain(postRecord);
+    return Option.safe(() => result);
   }
   async createPost(post: PostEntity): Promise<boolean> {
     const postPersistent = this.mapper.toPersistence(post);
@@ -52,7 +56,7 @@ export class PostRepository
         id: postPersistent.id,
         content: postPersistent.content,
         mode: postPersistent.mode,
-        userId: '30118fc5-665e-4c87-b9c3-8fc246efdf3a',
+        userId: postPersistent.userId,
         version: 0,
         attachments: {
           createMany: {
@@ -69,16 +73,8 @@ export class PostRepository
   }
   async savePost(post: PostEntity): Promise<boolean> {
     const postPersistent = this.mapper.toPersistence(post);
-    console.log(post);
     const attachments = postPersistent['attachments'] as AttachmentRecord[];
-    // const comments = postPersistent['comments'] as CommentRecord[];
-
-    const comment = {
-      id: 'c9b2268b-1a50-4fff-aaeb-ae6812080c9f',
-      content: 'hello comment',
-      userId: '30118fc5-665e-4c87-b9c3-8fc246efdf3a',
-    };
-    // const comments: CommentRecord[] = [comment]
+    const comments = postPersistent['comments'] as CommentPersistent[];
 
     const result = await this.prisma.postRecord.update({
       where: { id: postPersistent.id },
@@ -89,36 +85,80 @@ export class PostRepository
         attachments: {
           upsert: attachments.map((attachment) => ({
             where: { id: attachment.id },
-            create: attachment,
+            create: {
+              description: attachment.description,
+              name: attachment.name,
+              size: attachment.size,
+              type: attachment.type,
+            },
             update: {
-              ...attachment,
+              description: attachment.description,
+              name: attachment.name,
+              size: attachment.size,
+              type: attachment.type,
             },
           })),
+          deleteMany: {
+            id: {
+              notIn: attachments.map((attachment) => attachment.id),
+            },
+          },
         },
         comments: {
-          upsert: {
+          upsert: comments.map((comment) => ({
+            where: { id: comment.id },
             create: {
               content: comment.content,
               userId: comment.userId,
+              // postId: postPersistent.id,
+              attachments: {
+                create: attachments.map((attachment) => ({
+                  description: attachment.description,
+                  name: attachment.name,
+                  size: attachment.size,
+                  type: attachment.type,
+                })),
+              },
             },
             update: {
               content: comment.content,
-              userId: comment.userId,
+              attachments: {
+                upsert: comment.attachments.map((attachment) => ({
+                  where: { id: attachment.id },
+                  create: {
+                    description: attachment.description,
+                    name: attachment.name,
+                    size: attachment.size,
+                    type: attachment.type,
+                  },
+                  update: {
+                    description: attachment.description,
+                    name: attachment.name,
+                    size: attachment.size,
+                    type: attachment.type,
+                  },
+                })),
+                deleteMany: {
+                  id: {
+                    notIn: comment.attachments.map(
+                      (attachment) => attachment.id
+                    ),
+                  },
+                },
+              },
             },
-            where: {
-              id: comment.id,
-            },
-          },
+          })),
         },
       },
-      include: {
-        attachments: true,
-        comments: {
-          include: {
-            replies: true,
-          },
-        },
-      },
+      // include: {
+      //   attachments: true,
+      //   comments: {
+      //     include: {
+      //       replies: true,
+      //       attachments: true,
+      //     },
+      //   },
+      // },
     });
     return !!result;
   }
@@ -131,5 +171,14 @@ export class PostRepository
   findCommentById(id: string): Promise<CommentEntity> {
     throw new Error('Method not implemented.');
   }
-  // ...
+  async checkExistAttachmentsByIds(ids: string[]): Promise<boolean> {
+    const result = await this.prisma.attachmentRecord.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    return result.length > 0;
+  }
 }

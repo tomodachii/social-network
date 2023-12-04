@@ -17,7 +17,7 @@ export interface AttachmentProps {
 }
 
 export interface CreateAttachmentProps {
-  id: AggregateID;
+  id?: AggregateID;
   name: string;
   description: string;
   size: number;
@@ -28,7 +28,7 @@ export class AttachmentEntity extends Entity<AttachmentProps> {
   protected _id: AggregateID;
 
   static create(create: CreateAttachmentProps): AttachmentEntity {
-    const id = v4();
+    const id = create.id || v4();
     const props: AttachmentProps = {
       ...create,
     };
