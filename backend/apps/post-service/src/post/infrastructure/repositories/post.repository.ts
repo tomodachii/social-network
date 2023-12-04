@@ -75,7 +75,7 @@ export class PostRepository
     const postPersistent = this.mapper.toPersistence(post);
     const attachments = postPersistent['attachments'] as AttachmentRecord[];
     const comments = postPersistent['comments'] as CommentPersistent[];
-
+    console.log(postPersistent);
     const result = await this.prisma.postRecord.update({
       where: { id: postPersistent.id },
       data: {
@@ -112,7 +112,7 @@ export class PostRepository
               userId: comment.userId,
               // postId: postPersistent.id,
               attachments: {
-                create: attachments.map((attachment) => ({
+                create: comment.attachments.map((attachment) => ({
                   description: attachment.description,
                   name: attachment.name,
                   size: attachment.size,
@@ -148,17 +148,13 @@ export class PostRepository
               },
             },
           })),
+          deleteMany: {
+            id: {
+              notIn: comments.map((comment) => comment.id),
+            },
+          },
         },
       },
-      // include: {
-      //   attachments: true,
-      //   comments: {
-      //     include: {
-      //       replies: true,
-      //       attachments: true,
-      //     },
-      //   },
-      // },
     });
     return !!result;
   }

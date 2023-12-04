@@ -72,7 +72,6 @@ export class UserRepository
   async updateCover(user: UserEntity): Promise<boolean> {
     const userRecord = this.mapper.toPersistence(user);
     const coverRecord = userRecord.cover;
-    console.log(userRecord);
     const [deleteCover, createCover] = await this.prisma.$transaction([
       this.deleteBioImage(user, BioImageType.COVER),
       this.prisma.bioImageRecord.create({

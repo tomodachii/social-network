@@ -7,6 +7,8 @@ import {
   AddCommentController,
   CreatePostCommandHandler,
   CreatePostController,
+  DeleteCommentCommandHandler,
+  DeleteCommentController,
   DeletePostCommandHandler,
   DeletePostController,
   UpdateCommentCommandHandler,
@@ -26,6 +28,7 @@ const httpControllers = [
   ViewPostController,
   AddCommentController,
   UpdateCommentController,
+  DeleteCommentController,
 ];
 
 // const messageControllers = [UserMessageController];
@@ -36,6 +39,7 @@ const commandHandlers: Provider[] = [
   DeletePostCommandHandler,
   AddCommentCommandHandler,
   UpdateCommentCommandHandler,
+  DeleteCommentCommandHandler,
 ];
 
 const queryHandlers: Provider[] = [ViewPostQueryHandler];
